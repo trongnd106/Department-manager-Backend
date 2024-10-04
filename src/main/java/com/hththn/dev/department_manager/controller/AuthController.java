@@ -25,7 +25,7 @@ public class AuthController {
     private final SecurityUtil securityUtil;
 
     @PostMapping
-    public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody UserLoginDTO loginDto) {
+    public ResponseEntity<ResLoginDTO> login(@RequestBody UserLoginDTO loginDto) {
         // Put input including username/password into Security
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 loginDto.getUsername(), loginDto.getPassword());
@@ -36,7 +36,7 @@ public class AuthController {
         // Put information into securitycontext if user logins successfully. Spring has done it but we can config in here.
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        //create a token
+        // create a token
         String access_token = this.securityUtil.createToken(authentication);
         ResLoginDTO res = new ResLoginDTO();
         res.setAccessToken(access_token);

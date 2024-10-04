@@ -27,19 +27,19 @@ public class JwtConfig {
     @Value("${authentication.jwt.token-validity-in-seconds}")
     private long jwtExpiration;
 
-    //Người dùng gửi request từ post/login -> hệ thống xác thực và trả về jwt bằng jwtEncoder -> Trong các yêu cầu tiếp theo, client sẽ gửi JWT kèm theo yêu cầu trong header Authorization. -> Spring Security sử dụng JwtDecoder để giải mã và xác thực JWT cho các yêu cầu này.
-    //Phương thức này trả về một đối tượng JwtEncoder, chịu trách nhiệm mã hóa và tạo các JWT trong ứng dụng. NimbusJwtEncoder là một triển khai của JwtEncoder, sử dụng thư viện Nimbus JOSE+JWT để mã hóa và ký JWT. Nó yêu cầu một khóa bí mật để mã hóa và ký mã thông báo.
+    //When user sends request from post/login -> The system authenticates and returns a JWT using jwtEncoder. -> In subsequent requests, the client will send the JWT along with the request in the Authorization header. -> Spring Security uses JwtDecoder to decode and authenticate the JWT for these requests.
+    //This metho returns a JwtEncoder object, Which is responsible for encoding and creating JWTs in the application.
     @Bean
     public JwtEncoder jwtEncoder() {
         return new NimbusJwtEncoder(new ImmutableSecret<>(getSecretKey()));
     }
-    //Phương thức này tạo ra và trả về một đối tượng SecretKey, là khóa bí mật được sử dụng để mã hóa JWT. Khóa này được tạo từ chuỗi jwtKey (khóa bí mật dưới dạng Base64).
+    //This method creates and returns a SecretKey object, which is the secret key used to encode the JWT. This key is generated from the jwtKey string (a secret key in Base64 format).
     private SecretKey getSecretKey() {
         byte[] keyBytes = Base64.from(jwtKey).decode();
         return new SecretKeySpec(keyBytes, 0, keyBytes.length, SecurityUtil.JWT_ALGORITHM.getName());
     }
 
-    //Bean để giải mã các JWT
+    //Bean for decoding JWT tokens
     @Bean
     public JwtDecoder jwtDecoder() {
         NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withSecretKey(getSecretKey()).macAlgorithm(SecurityUtil.JWT_ALGORITHM).build();
@@ -52,8 +52,8 @@ public class JwtConfig {
             }
         };
     }
-    //khi decode thành công có tác dụng chuyển đổi JWT thành đối tượng Authentication trong Spring Security.
-    //Cụ thể, nó giúp xác định các quyền (authorities) mà người dùng có dựa trên thông tin được chứa trong JWT.
+    //When successfully decoded, it converts the JWT into an Authentication object in Spring Security.
+    //Specifically, it helps determine the authorities the user has based on the information contained in the JWT.
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
@@ -63,6 +63,6 @@ public class JwtConfig {
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
         return jwtAuthenticationConverter;
     }
-    //jwtDecoder để giải mã token và JwtAuthenticationConverter để lấy các quyền từ token đã giải mã đó
+    //jwtDecoder is used to decode token and JwtAuthenticationConverter is used to extract the authorities (roles/permissions) from the decoded token.
 
 }

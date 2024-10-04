@@ -21,12 +21,20 @@ public class UserController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
-    // fetch all users
+    //fetch all users
     @Operation(summary = "Get list of users", description = "abcabc")
     @GetMapping()
     public ResponseEntity<List<User>> getAllUser() {
         List<User> users = this.userService.fetchAllUser();
         return ResponseEntity.status(HttpStatus.OK).body(users);
+    }
+
+    //fetch user by id
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable("id") long id){
+        User fetchUser = this.userService.fetchUserById(id);
+        // return ResponseEntity.ok(fetchUser);
+        return ResponseEntity.status(HttpStatus.OK).body(fetchUser);
     }
 
     //Create new user
@@ -38,5 +46,18 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
+    //Delete user by id
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable("id") long id) {
+        this.userService.handleDeleteUser(id);
+        return ResponseEntity.ok("deleted successfully");
+    }
+
+    //Update user
+    @PutMapping("/users")
+    public ResponseEntity<User> updateUser(@RequestBody User user) {
+        User apiUser = this.userService.handleUpdateUser(user);
+        return ResponseEntity.ok(apiUser);
+    }
 
 }
