@@ -67,23 +67,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() throws Exception {
-        String email = SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get() : "";
-
-        if (email.equals("")) {
-            throw new UserInfoException("Access token isn't valid");
-        }
-
-        // update refresh token = null
-        this.userService.updateUserToken(null, email);
-
-        // remove refresh token cookie
-        ResponseCookie deleteSpringCookie = ResponseCookie
-                .from("refresh_token", null)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(0)
-                .build();
+        ResponseCookie deleteSpringCookie = this.authService.handleLogout();
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, deleteSpringCookie.toString())

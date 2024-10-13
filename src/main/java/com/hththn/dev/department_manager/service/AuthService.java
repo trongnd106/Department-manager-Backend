@@ -3,6 +3,7 @@ package com.hththn.dev.department_manager.service;
 
 import com.hththn.dev.department_manager.dto.request.UserLoginDTO;
 import com.hththn.dev.department_manager.dto.response.ResLoginDTO;
+import com.hththn.dev.department_manager.exception.UserInfoException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
@@ -67,5 +68,28 @@ public class AuthService {
             userLogin.setName(currentUserDB.getName());
         }
         return userLogin;
+    }
+
+    // logout
+    public ResponseCookie handleLogout() throws UserInfoException {
+        String email = SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get() : "";
+
+        if (email.equals("")) {
+            throw new UserInfoException("Access token isn't valid");
+        }
+
+        // update refresh token = null
+        this.userService.updateUserToken(null, email);
+
+        // remove refresh token cookie
+        ResponseCookie deleteSpringCookie = ResponseCookie
+                .from("refresh_token", null)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        return deleteSpringCookie;
     }
 }
