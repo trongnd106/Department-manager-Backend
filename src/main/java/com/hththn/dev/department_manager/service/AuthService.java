@@ -38,7 +38,7 @@ public class AuthService {
         ResLoginDTO res = new ResLoginDTO();
 
         // return user's info
-        User currentUserDB = this.userService.handleGetUserByUsername(loginDto.getUsername());
+        User currentUserDB = this.userService.getUserByUsername(loginDto.getUsername());
         if (currentUserDB != null) {
             ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin(
                     currentUserDB.getId(),
@@ -60,7 +60,7 @@ public class AuthService {
                 ? SecurityUtil.getCurrentUserLogin().get()
                 : "";
 
-        User currentUserDB = this.userService.handleGetUserByUsername(email);
+        User currentUserDB = this.userService.getUserByUsername(email);
         ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin();
         if (currentUserDB != null) {
             userLogin.setId(currentUserDB.getId());
@@ -74,7 +74,7 @@ public class AuthService {
     public ResponseCookie handleLogout() throws UserInfoException {
         String email = SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get() : "";
 
-        if (email.equals("")) {
+        if (email.isEmpty()) {
             throw new UserInfoException("Access token isn't valid");
         }
 
@@ -82,14 +82,12 @@ public class AuthService {
         this.userService.updateUserToken(null, email);
 
         // remove refresh token cookie
-        ResponseCookie deleteSpringCookie = ResponseCookie
+        return ResponseCookie
                 .from("refresh_token", null)
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
                 .maxAge(0)
                 .build();
-
-        return deleteSpringCookie;
     }
 }

@@ -50,6 +50,7 @@ public class  AuthController {
         return ResponseEntity.ok().body(userLogin);
     }
 
+    // When access token expired, frontend calls this endpoint to get a new access token and refresh token
     @GetMapping("/refresh")
     public ResponseEntity<ResLoginDTO> getRefreshToken(
             @CookieValue(name = "refresh_token", defaultValue = "abc") String refresh_token) throws Exception {

@@ -11,7 +11,9 @@ import com.hththn.dev.department_manager.dto.response.ResLoginDTO;
 import com.hththn.dev.department_manager.entity.User;
 import com.hththn.dev.department_manager.exception.UserInfoException;
 import com.nimbusds.jose.util.Base64;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -31,11 +33,13 @@ import javax.crypto.spec.SecretKeySpec;
 @Service
 public class SecurityUtil {
     private final JwtEncoder jwtEncoder;
+    private final JwtDecoder jwtDecoder;
     private final UserService userService;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    public SecurityUtil(JwtEncoder jwtEncoder, UserService userService, AuthenticationManagerBuilder authenticationManagerBuilder) {
+    public SecurityUtil(JwtEncoder jwtEncoder, JwtDecoder jwtDecoder, UserService userService, AuthenticationManagerBuilder authenticationManagerBuilder) {
         this.jwtEncoder = jwtEncoder;
+        this.jwtDecoder = jwtDecoder;
         this.userService = userService;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
     }
@@ -115,26 +119,25 @@ public class SecurityUtil {
                 JWT_ALGORITHM.getName());
     }
 
-    public Jwt checkValidRefreshToken(String token){
-        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withSecretKey(
-                getSecretKey()).macAlgorithm(SecurityUtil.JWT_ALGORITHM).build();
-        try {
-            return jwtDecoder.decode(token);
-        } catch (Exception e) {
-            System.out.println(">>> Refresh Token error: " + e.getMessage());
-            throw e;
-        }
-    }
-
     // refresh token
     public ResLoginDTO getRefreshedUser(String refresh_token) throws Exception{
         if (refresh_token.equals("abc")) {
             throw new UserInfoException("There is no refresh token on cookie");
         }
-        // check valid
-        Jwt decodedToken = this.checkValidRefreshToken(refresh_token);
-        String email = decodedToken.getSubject();
 
+        // check valid
+        Jwt decodedToken;
+        try {
+            decodedToken = jwtDecoder.decode(refresh_token);
+        } catch (JwtException ex) {
+            // Check if the exception is due to token expiration
+            if (ex instanceof JwtValidationException && ex.getMessage().contains("token_expired")) {
+                throw new UserInfoException("Your session has expired");
+            }
+            throw new UserInfoException("Refresh token is not valid");
+        }
+
+        String email = decodedToken.getSubject();
         // check user by token + email
         User currentUser = this.userService.getUserByRefreshTokenAndEmail(refresh_token, email);
         if (currentUser == null) {
@@ -143,7 +146,7 @@ public class SecurityUtil {
 
         // issue new token/set refresh token as cookies
         ResLoginDTO res = new ResLoginDTO();
-        User currentUserDB = this.userService.handleGetUserByUsername(email);
+        User currentUserDB = this.userService.getUserByUsername(email);
         if (currentUserDB != null) {
             ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin(
                     currentUserDB.getId(),

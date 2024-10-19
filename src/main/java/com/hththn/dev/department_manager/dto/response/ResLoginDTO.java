@@ -1,25 +1,24 @@
 package com.hththn.dev.department_manager.dto.response;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 //Return access token
 @Getter
 @Setter
+@FieldDefaults(level= AccessLevel.PRIVATE)
 public class ResLoginDTO {
-    private String accessToken;
-    private UserLogin user;
+    String accessToken;
+    UserLogin user;
 
     @Getter
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
     public static class UserLogin {
-        private long id;
-        private String email;
-        private String name;
+        long id;
+        String email;
+        String name;
     }
 
 }

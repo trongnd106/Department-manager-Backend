@@ -1,9 +1,11 @@
 package com.hththn.dev.department_manager.controller;
 
+import com.hththn.dev.department_manager.dto.request.UserCreateRequest;
 import com.hththn.dev.department_manager.dto.response.UserResponse;
 import com.hththn.dev.department_manager.exception.UserInfoException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,44 +39,27 @@ public class UserController {
     public ResponseEntity<UserResponse> getUserById(@PathVariable("id") long id) throws Exception {
         User fetchUser = this.userService.fetchUserById(id);
         UserResponse userResponse = this.userService.UserToUserResponse(fetchUser);
-        if(fetchUser == null){
-            throw new UserInfoException("Id "+id+" is not found");
-        }
         return ResponseEntity.status(HttpStatus.OK).body(userResponse);
     }
 
     //Create new user
     @PostMapping("/register")
-    public ResponseEntity<User> createNewUser(@RequestBody User apiUser) throws Exception {
-        boolean isEmailExist = this.userService.isEmailExist(apiUser.getEmail());
-        if (isEmailExist) {
-            throw new UserInfoException(
-                    "Email " + apiUser.getEmail() + " already existed, please choose another one.");
-        }
-        String hashPassword = this.passwordEncoder.encode(apiUser.getPassword());
-        apiUser.setPassword(hashPassword);
-        User user = this.userService.handleCreateUser(apiUser);
+    public ResponseEntity<User> createNewUser(@Valid @RequestBody UserCreateRequest apiUser) throws Exception {
+        User user = this.userService.createUser(apiUser);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
     //Delete user by id
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable("id") long id) throws Exception {
-        User currentUser = this.userService.fetchUserById(id);
-        if (currentUser == null) {
-            throw new UserInfoException("User with id = " + id + " is not found");
-        }
-        this.userService.handleDeleteUser(id);
+        this.userService.deleteUser(id);
         return ResponseEntity.ok("deleted successfully");
     }
 
     //Update user
-    @PutMapping("/users")
+    @PutMapping()
     public ResponseEntity<User> updateUser(@RequestBody User user) throws Exception {
-        User apiUser = this.userService.handleUpdateUser(user);
-        if (apiUser == null) {
-            throw new UserInfoException("User with id = " + user.getId() + " is not found");
-        }
+        User apiUser = this.userService.updateUser(user);
         return ResponseEntity.ok(apiUser);
     }
 

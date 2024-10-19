@@ -10,6 +10,8 @@ import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
+import java.util.Map;
+
 //Format the content of the response body before it is sent to the client
 @ControllerAdvice
 public class FormatApiResponse implements ResponseBodyAdvice<Object> {
@@ -35,16 +37,34 @@ public class FormatApiResponse implements ResponseBodyAdvice<Object> {
         ApiResponse<Object> res = new ApiResponse<Object>();
         res.setCode(status);
 
-        if(body instanceof String){
+        // If body is ApiResponse, do nothing
+        if (body instanceof ApiResponse) {
             return body;
         }
 
+        // Check error (status >= 400)
         if (status >= 400) {
-            return body;
+            String errorMessage;
+            // If body is a Map, maybe there is a system error (404,...)
+            if (body instanceof Map) {
+                Map<String, Object> errorBody = (Map<String, Object>) body;
+                errorMessage = (String) errorBody.getOrDefault("error", "An error has occurred");
+                res.setData(errorBody);
+            } else if (body instanceof String) {
+                // If body is a String, assume it is an error message
+                errorMessage = (String) body;
+            } else {
+                // default
+                errorMessage = "An error has occurred";
+            }
+            res.setMessage(errorMessage);
+            res.setData(null);
         } else {
+            // Success (status < 400)
             res.setData(body);
             res.setMessage("CALL API SUCCESS");
         }
+
 
         return res;
     }
