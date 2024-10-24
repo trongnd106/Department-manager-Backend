@@ -22,6 +22,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/v1/auth")
+@CrossOrigin(origins = "http://localhost:5173")
 public class  AuthController {
     private final AuthService authService;
     private final SecurityUtil securityUtil;

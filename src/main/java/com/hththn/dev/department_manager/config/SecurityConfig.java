@@ -33,9 +33,6 @@ public class SecurityConfig{
                 .csrf(c -> c.disable())
 
 
-                .cors(c -> c.disable())
-
-
                 .formLogin(f -> f.disable())
 
 
