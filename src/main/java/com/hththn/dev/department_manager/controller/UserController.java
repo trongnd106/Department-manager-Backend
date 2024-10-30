@@ -25,7 +25,6 @@ import java.util.List;
 @Tag(name = "User Controller")
 public class UserController {
     private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
 
     //fetch all users
     @Operation(summary = "Get list of users", description = "abcabc")
