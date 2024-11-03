@@ -72,6 +72,7 @@ public class UserService {
     public boolean isEmailExist(String email) {
         return this.userRepository.findByEmail(email) != null;
     }
+
     //Logic create user
     public User createUser(UserCreateRequest userCreateRequest) throws UserInfoException {
         if (isEmailExist(userCreateRequest.getUsername())) {
@@ -94,7 +95,6 @@ public class UserService {
         return this.userRepository.save(user);
     }
 
-
     public void updateUserToken(String token, String email) {
         User currentUser = this.getUserByUsername(email);
         if (currentUser != null) {
@@ -106,7 +106,7 @@ public class UserService {
     public User getUserByRefreshTokenAndEmail(String token, String email) {
         return this.userRepository.findByRefreshTokenAndEmail(token, email);
     }
-
-    public UserResponse UserToUserResponse(User user) { return this.userMapper.toUserResponse(user);}
-
+    public UserResponse UserToUserResponse(User user) {
+        return this.userMapper.toUserResponse(user);
+    }
 }

@@ -124,7 +124,6 @@ public class SecurityUtil {
         if (refresh_token.equals("abc")) {
             throw new UserInfoException("There is no refresh token on cookie");
         }
-
         // check valid
         Jwt decodedToken;
         try {
@@ -136,14 +135,12 @@ public class SecurityUtil {
             }
             throw new UserInfoException("Refresh token is not valid");
         }
-
         String email = decodedToken.getSubject();
         // check user by token + email
         User currentUser = this.userService.getUserByRefreshTokenAndEmail(refresh_token, email);
         if (currentUser == null) {
             throw new UserInfoException("Refresh token is not valid");
         }
-
         // issue new token/set refresh token as cookies
         ResLoginDTO res = new ResLoginDTO();
         User currentUserDB = this.userService.getUserByUsername(email);
@@ -154,17 +151,13 @@ public class SecurityUtil {
                     currentUserDB.getName());
             res.setUser(userLogin);
         }
-
         // create access token
         String access_token = this.createAccessToken(email, res.getUser(), Collections.emptyList());//Authorization has not been loaded yet
         res.setAccessToken(access_token);
-
         // create refresh token
         String new_refresh_token = this.createRefreshToken(email, res);
-
         // update user
         this.userService.updateUserToken(new_refresh_token, email);
-
         return res;
     }
 
@@ -185,7 +178,6 @@ public class SecurityUtil {
         }
         return null;
     }
-
     // Get the JWT of the current user.
     public static Optional<String> getCurrentUserJWT() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
@@ -193,7 +185,6 @@ public class SecurityUtil {
                 .filter(authentication -> authentication.getCredentials() instanceof String)
                 .map(authentication -> (String) authentication.getCredentials());
     }
-
 
 }
 
