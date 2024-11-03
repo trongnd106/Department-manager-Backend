@@ -71,7 +71,6 @@ public class UserService {
         else throw new UserInfoException("User with id " + reqUser.getId() + " is not found");
         return currentUser;
     }
-
     //Check existed email
     public boolean isEmailExist(String email) {
         return this.userRepository.findByEmail(email) != null;
@@ -88,7 +87,6 @@ public class UserService {
             existingUser.setIsActive(1);
             return this.userRepository.save(existingUser);
         }
-
         // If email is not found, create a new user
         User user = new User();
         user.setName(userCreateRequest.getName());
@@ -97,8 +95,6 @@ public class UserService {
         user.setEmail(userCreateRequest.getUsername());
         return this.userRepository.save(user);
     }
-
-
     public void updateUserToken(String token, String email) {
         User currentUser = this.getUserByUsername(email);
         if (currentUser != null) {
@@ -106,11 +102,10 @@ public class UserService {
             this.userRepository.save(currentUser);
         }
     }
-
     public User getUserByRefreshTokenAndEmail(String token, String email) {
         return this.userRepository.findByRefreshTokenAndEmail(token, email);
     }
-
-    public UserResponse UserToUserResponse(User user) { return this.userMapper.toUserResponse(user);}
-
+    public UserResponse UserToUserResponse(User user) {
+        return this.userMapper.toUserResponse(user);
+    }
 }
