@@ -50,8 +50,11 @@ public class UserService {
     //Logic delete user by id
     public void deleteUser(long id) throws UserInfoException {
         User currentUser = this.fetchUserById(id);
-        currentUser.setIsActive(0);
-        this.userRepository.save(currentUser);
+        if(currentUser != null) {
+            currentUser.setIsActive(0);
+            this.userRepository.save(currentUser);
+        }
+        else throw new UserInfoException("User with id " + id + " is not found");
     }
 
     //Logic update user
@@ -65,14 +68,13 @@ public class UserService {
             // update
             currentUser = this.userRepository.save(currentUser);
         }
+        else throw new UserInfoException("User with id " + reqUser.getId() + " is not found");
         return currentUser;
     }
-
     //Check existed email
     public boolean isEmailExist(String email) {
         return this.userRepository.findByEmail(email) != null;
     }
-
     //Logic create user
     public User createUser(UserCreateRequest userCreateRequest) throws UserInfoException {
         if (isEmailExist(userCreateRequest.getUsername())) {
@@ -85,7 +87,6 @@ public class UserService {
             existingUser.setIsActive(1);
             return this.userRepository.save(existingUser);
         }
-
         // If email is not found, create a new user
         User user = new User();
         user.setName(userCreateRequest.getName());
@@ -94,7 +95,6 @@ public class UserService {
         user.setEmail(userCreateRequest.getUsername());
         return this.userRepository.save(user);
     }
-
     public void updateUserToken(String token, String email) {
         User currentUser = this.getUserByUsername(email);
         if (currentUser != null) {
@@ -102,7 +102,6 @@ public class UserService {
             this.userRepository.save(currentUser);
         }
     }
-
     public User getUserByRefreshTokenAndEmail(String token, String email) {
         return this.userRepository.findByRefreshTokenAndEmail(token, email);
     }
