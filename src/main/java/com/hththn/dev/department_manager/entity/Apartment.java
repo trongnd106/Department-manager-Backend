@@ -1,10 +1,12 @@
 package com.hththn.dev.department_manager.entity;
 
+import com.hththn.dev.department_manager.constant.ApartmentEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.Instant;
+import java.util.List;
 
 @Entity
 @Table(name = "apartments")
@@ -15,14 +17,18 @@ import java.time.Instant;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Apartment {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-    Long area;
-    Integer member;
-    String hostName;
-    Integer isActive;
+    Long addressNumber;
+    double area;
+    ApartmentEnum status;
     Instant createdAt;
     Instant updatedAt;
+
+    @OneToMany(mappedBy = "apartment")
+    List<Resident> residentList;
+
+    @OneToOne
+    @JoinColumn(name = "owner_id", referencedColumnName = "id")  //The name of the foreign key column in the apartments table refers to the id in the residents table.
+    Resident owner;
     @PrePersist
     public void beforeCreate() {
         this.createdAt = Instant.now();
