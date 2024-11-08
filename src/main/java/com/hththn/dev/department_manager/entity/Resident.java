@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.hththn.dev.department_manager.constant.ResidentEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -26,26 +27,33 @@ public class Resident {
     String name;
 
     LocalDate dob;
-    String status;
+    @Enumerated(EnumType.STRING)
+    ResidentEnum status;
     LocalDate statusDate;
-
-
-    @ManyToOne
-    @JoinColumn(name = "address_number")
-    Apartment apartment;
+    String addressNumber;
 
     Instant createdAt;
-    Instant updatedAt;
 
     @PrePersist
     public void beforeCreate() {
         this.createdAt = Instant.now();
+        this.statusDate = LocalDate.now();
+    }
+
+    @Transient  // field used to compare with status, not saved into database
+    ResidentEnum previousStatus;
+
+    @PostLoad
+    public void onLoad() {
+        this.previousStatus = this.status;
     }
 
     @PreUpdate
     public void beforeUpdate() {
-        this.updatedAt = Instant.now();
+        if (!status.equals(previousStatus)) {  // if status changed
+            this.statusDate = LocalDate.now();  // update statusDate
+        }
+        this.previousStatus = this.status;
     }
 
 }
-

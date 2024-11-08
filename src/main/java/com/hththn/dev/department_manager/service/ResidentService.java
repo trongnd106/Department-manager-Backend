@@ -1,5 +1,6 @@
 package com.hththn.dev.department_manager.service;
 
+import com.hththn.dev.department_manager.constant.ResidentEnum;
 import com.hththn.dev.department_manager.dto.request.ResidentCreateRequest;
 import com.hththn.dev.department_manager.dto.response.ApiResponse;
 import com.hththn.dev.department_manager.dto.response.PaginatedResponse;
@@ -40,10 +41,11 @@ public class ResidentService {
 
     public Resident createResident(ResidentCreateRequest resident) throws Exception {
         Resident resident1 = new Resident();
+        resident1.setId(resident.getId());
         resident1.setName(resident.getName());
         resident1.setDob(resident.getDob());
-        resident1.setStatus(resident.getStatus());
-        resident1.setApartment(new Apartment());//waiting apartment api
+        resident1.setStatus(ResidentEnum.fromString(resident.getStatus()));
+        resident1.setAddressNumber(resident.getAddressNumber());
         return this.residentRepository.save(resident1);
     }
 
@@ -51,7 +53,7 @@ public class ResidentService {
         Resident oldResident = this.fetchResidentById(resident.getId());
         if(oldResident!=null){
             if(resident.getName()!=null) oldResident.setName(resident.getName());
-            if(resident.getApartment().getAddressNumber()!=null) oldResident.getApartment().setAddressNumber(resident.getApartment().getAddressNumber());
+            if(resident.getAddressNumber()!=null) oldResident.setAddressNumber(resident.getAddressNumber());
             if(resident.getDob()!=null) oldResident.setDob(resident.getDob());
             if(resident.getStatus()!=null) oldResident.setStatus(resident.getStatus());
         }
