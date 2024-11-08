@@ -20,7 +20,7 @@ public class Apartment {
     @Id
     Long addressNumber;
 
-    @OneToMany(mappedBy = "apartment")
+    @OneToMany()
     List<Resident> residentList;
 
     @OneToOne
