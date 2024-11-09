@@ -1,6 +1,7 @@
 package com.hththn.dev.department_manager.controller;
 
 import com.hththn.dev.department_manager.dto.request.UserCreateRequest;
+import com.hththn.dev.department_manager.dto.response.ApiResponse;
 import com.hththn.dev.department_manager.dto.response.UserResponse;
 import com.hththn.dev.department_manager.exception.UserInfoException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,9 +52,9 @@ public class UserController {
 
     //Delete user by id
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable("id") long id) throws Exception {
-        this.userService.deleteUser(id);
-        return ResponseEntity.ok("deleted successfully");
+    public ResponseEntity<ApiResponse<String>> deleteUser(@PathVariable("id") long id) throws Exception {
+        ApiResponse<String> response = this.userService.deleteUser(id);
+        return ResponseEntity.ok(response);
     }
 
     //Update user

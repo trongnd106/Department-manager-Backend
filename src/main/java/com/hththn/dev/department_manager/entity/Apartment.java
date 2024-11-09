@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 import java.time.Instant;
 import java.util.List;
 
+
 @Entity
 @Table(name = "apartments")
 @Getter
@@ -19,11 +20,12 @@ public class Apartment {
     @Id
     Long addressNumber;
     double area;
+    @Enumerated(EnumType.STRING)
     ApartmentEnum status;
     Instant createdAt;
     Instant updatedAt;
 
-    @OneToMany(mappedBy = "apartment")
+    @OneToMany()
     List<Resident> residentList;
 
     @OneToOne
