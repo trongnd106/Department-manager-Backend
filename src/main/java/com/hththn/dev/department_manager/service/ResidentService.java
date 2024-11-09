@@ -51,7 +51,7 @@ public class ResidentService {
         resident1.setId(resident.getId());
         resident1.setName(resident.getName());
         resident1.setDob(resident.getDob());
-        resident1.setStatus(resident.getStatus());
+        resident1.setStatus(ResidentEnum.fromString(resident.getStatus()));
         resident1.setApartment(null);
         return this.residentRepository.save(resident1);
     }
