@@ -55,8 +55,8 @@ public class ApartmentService {
                 .residentList(members)
                 .build();
 
-        owner.setAddressNumber(String.valueOf(request.getAddressNumber()));
-        members.forEach(member -> member.setAddressNumber(String.valueOf(request.getAddressNumber())));
+        owner.setApartment(apartment);
+        members.forEach(member -> member.setApartment(apartment));
 
         return apartmentRepository.save(apartment);
     }
@@ -97,7 +97,7 @@ public class ApartmentService {
         // Remove resident who not in request list
         apartment.getResidentList().forEach(resident -> {
             if (!request.getResidents().contains(resident.getId())) {
-                resident.setAddressNumber(null);   // set their address = null
+                resident.setApartment(null);   // set their address = null
             }
         });
 
