@@ -31,8 +31,9 @@ public class ResidentService {
         return page;
     }
 
-    public Resident fetchResidentById(Long id) throws Exception {
-        return this.residentRepository.findById(id).orElseThrow(()-> new Exception("Resident with id = "+id+ " is not found"));
+    public Resident fetchResidentById(Long id) {
+        return this.residentRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("Resident with id = "+id+ " is not found"));
     }
 
     public Resident createResident(ResidentCreateRequest resident) throws Exception {

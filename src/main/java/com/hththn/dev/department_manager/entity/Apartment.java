@@ -15,11 +15,15 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
 public class Apartment {
     @Id
     Long addressNumber;
     double area;
+
+    @Enumerated(EnumType.STRING)
     ApartmentEnum status;
+
     Instant createdAt;
     Instant updatedAt;
 
