@@ -2,12 +2,14 @@ package com.hththn.dev.department_manager.service;
 
 
 import com.hththn.dev.department_manager.dto.request.UserCreateRequest;
+import com.hththn.dev.department_manager.dto.response.ApiResponse;
 import com.hththn.dev.department_manager.dto.response.UserResponse;
 import com.hththn.dev.department_manager.entity.User;
 import com.hththn.dev.department_manager.exception.UserInfoException;
 import com.hththn.dev.department_manager.mapper.UserMapper;
 import com.hththn.dev.department_manager.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -48,13 +50,18 @@ public class UserService {
     }
 
     //Logic delete user by id
-    public void deleteUser(long id) throws UserInfoException {
+    public ApiResponse<String> deleteUser(long id) throws UserInfoException {
         User currentUser = this.fetchUserById(id);
         if(currentUser != null) {
             currentUser.setIsActive(0);
             this.userRepository.save(currentUser);
         }
         else throw new UserInfoException("User with id " + id + " is not found");
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setCode(HttpStatus.OK.value());
+        response.setMessage("delete user success");
+        response.setData(null);
+        return response;
     }
 
     //Logic update user
@@ -71,7 +78,6 @@ public class UserService {
         else throw new UserInfoException("User with id " + reqUser.getId() + " is not found");
         return currentUser;
     }
-
     //Check existed email
     public boolean isEmailExist(String email) {
         return this.userRepository.findByEmail(email) != null;
@@ -88,7 +94,6 @@ public class UserService {
             existingUser.setIsActive(1);
             return this.userRepository.save(existingUser);
         }
-
         // If email is not found, create a new user
         User user = new User();
         user.setName(userCreateRequest.getName());
@@ -97,8 +102,6 @@ public class UserService {
         user.setEmail(userCreateRequest.getUsername());
         return this.userRepository.save(user);
     }
-
-
     public void updateUserToken(String token, String email) {
         User currentUser = this.getUserByUsername(email);
         if (currentUser != null) {
@@ -106,11 +109,10 @@ public class UserService {
             this.userRepository.save(currentUser);
         }
     }
-
     public User getUserByRefreshTokenAndEmail(String token, String email) {
         return this.userRepository.findByRefreshTokenAndEmail(token, email);
     }
-
-    public UserResponse UserToUserResponse(User user) { return this.userMapper.toUserResponse(user);}
-
+    public UserResponse UserToUserResponse(User user) {
+        return this.userMapper.toUserResponse(user);
+    }
 }

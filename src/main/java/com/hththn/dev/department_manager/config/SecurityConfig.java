@@ -42,7 +42,7 @@ public class SecurityConfig{
 
 
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/","/api/v1/auth/login","api/v1/auth/refresh","/h2-console/**").permitAll()  // Allow non-authenticated access to /login
+                        .requestMatchers("/","/api/v1/auth/login","api/v1/auth/refresh","/h2-console/**","api/v1/users/register").permitAll()  // Allow non-authenticated access to /login
                         .anyRequest().authenticated()  // Others need to be authenticated
                 )
 
