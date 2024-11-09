@@ -28,7 +28,10 @@ public class Resident {
 
     LocalDate dob;
     String status;
-    String addressNumber;
+
+    @ManyToOne()
+    @JoinColumn(name = "addressNumber")
+    Apartment apartment;
 
     Instant createdAt;
     Instant updatedAt;
