@@ -1,5 +1,6 @@
 package com.hththn.dev.department_manager.entity;
 
+import com.hththn.dev.department_manager.constant.FeeTypeEnum;
 import com.hththn.dev.department_manager.service.SecurityUtil;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,21 +12,24 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @Entity
-@Table(name = "funds")
+@Table(name = "fees")
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Fund {
+public class Fee {
     @Id
-    @Column(nullable = false)
-    String fundCode;
-    @Column(nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
+
     String name;
-    @Column(nullable = false)
-    String type;
-    @Column(nullable = false)
+
+    @Column(columnDefinition = "MEDIUMTEXT")
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    FeeTypeEnum feeTypeEnum;
+
     BigDecimal unitPrice;
-    LocalDate endDate;
 
     Instant createdAt;
     Instant updatedAt;
