@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
@@ -17,12 +18,12 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "residents")
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Resident {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
     String name;
@@ -31,13 +32,13 @@ public class Resident {
 
     @ManyToOne()
     @JoinColumn(name = "addressNumber")
+    @JsonIgnore
     Apartment apartment;
     @Enumerated(EnumType.STRING)
     ResidentEnum status;
     LocalDate statusDate;
 
     Instant createdAt;
-    Instant updatedAt;
 
     @PrePersist
     public void beforeCreate() {
@@ -48,9 +49,13 @@ public class Resident {
     @Transient  // field used to compare with status, not saved into database
     ResidentEnum previousStatus;
 
+    @Transient
+    Long apartmentId;
+
     @PostLoad
     public void onLoad() {
         this.previousStatus = this.status;
+        this.apartmentId = apartment != null ? apartment.getAddressNumber() : null;
     }
 
     @PreUpdate

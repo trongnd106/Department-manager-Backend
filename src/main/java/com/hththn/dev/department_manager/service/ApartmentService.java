@@ -23,7 +23,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -55,10 +57,11 @@ public class ApartmentService {
                 .residentList(members)
                 .build();
 
-        owner.setApartment(apartment);
-        members.forEach(member -> member.setApartment(apartment));
+        Apartment saved = apartmentRepository.save(apartment);
+        owner.setApartment(saved);
+        members.forEach(member -> member.setApartment(saved));
 
-        return apartmentRepository.save(apartment);
+        return saved;
     }
 
     public PaginatedResponse<Apartment> getAll(Specification<Apartment> spec, Pageable pageable){
@@ -87,22 +90,25 @@ public class ApartmentService {
             Resident newOwner = residentService.fetchResidentById(request.getOwnerId());
             apartment.setOwner(newOwner);
         }
-        apartment.setStatus(ApartmentEnum.valueOf(request.getStatus()));
+        if(request.getStatus()!=null) apartment.setStatus(ApartmentEnum.valueOf(request.getStatus()));
+
+        List<Resident> residentList = Optional.ofNullable(apartment.getResidentList()).orElse(Collections.emptyList());
+        List<Long> requestResidents = Optional.ofNullable(request.getResidents()).orElse(Collections.emptyList());
 
         // get current resident list
-        List<Long> currentResidentIds = apartment.getResidentList().stream()
+        List<Long> currentResidentIds = residentList.stream()
                 .map(Resident::getId)
                 .toList();
 
         // Remove resident who not in request list
-        apartment.getResidentList().forEach(resident -> {
-            if (!request.getResidents().contains(resident.getId())) {
+        residentList.forEach(resident -> {
+            if (!requestResidents.contains(resident.getId())) {
                 resident.setApartment(null);   // set their address = null
             }
         });
 
         // Add resident who not in current list
-        List<Resident> residentsToAdd = request.getResidents().stream()
+        List<Resident> residentsToAdd = requestResidents.stream()
                 .filter(residentId -> !currentResidentIds.contains(residentId))
                 .map(residentService::fetchResidentById)
                 .toList();

@@ -11,6 +11,7 @@ import com.hththn.dev.department_manager.entity.User;
 import com.hththn.dev.department_manager.exception.UserInfoException;
 import com.hththn.dev.department_manager.repository.ApartmentRepository;
 import com.hththn.dev.department_manager.repository.ResidentRepository;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -41,21 +42,26 @@ public class ResidentService {
         return page;
     }
 
+    @Transactional
     public Resident fetchResidentById(Long id) {
         return this.residentRepository.findById(id)
                 .orElseThrow(()-> new RuntimeException("Resident with id = "+id+ " is not found"));
     }
 
+    @Transactional
     public Resident createResident(ResidentCreateRequest resident) throws Exception {
-        Resident resident1 = new Resident();
-        resident1.setId(resident.getId());
-        resident1.setName(resident.getName());
-        resident1.setDob(resident.getDob());
-        resident1.setStatus(ResidentEnum.fromString(resident.getStatus()));
-        resident1.setApartment(null);
+        if(this.residentRepository.findById(resident.getId()).isPresent()) throw new RuntimeException("Resident with id = "+resident.getId()+" already exists");
+        Resident resident1 = Resident.builder()
+                .id(resident.getId())
+                .name(resident.getName())
+                .dob(resident.getDob())
+                .status(ResidentEnum.fromString(resident.getStatus()))
+                .apartment(null)
+                .build();
         return this.residentRepository.save(resident1);
     }
 
+    @Transactional
     public Resident updateResident(Resident resident) throws Exception {
         Resident oldResident = this.fetchResidentById(resident.getId());
         if(oldResident!=null){
@@ -73,6 +79,7 @@ public class ResidentService {
         return this.residentRepository.save(oldResident);
     }
 
+    @Transactional
     public ApiResponse<String> deleteResident(Long id) throws Exception {
         Resident resident = this.fetchResidentById(id);
         this.residentRepository.delete(resident);

@@ -1,5 +1,6 @@
 package com.hththn.dev.department_manager.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hththn.dev.department_manager.constant.ApartmentEnum;
 import jakarta.persistence.*;
 import lombok.*;
