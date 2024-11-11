@@ -1,5 +1,6 @@
 package com.hththn.dev.department_manager.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hththn.dev.department_manager.constant.ApartmentEnum;
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,7 +9,6 @@ import lombok.experimental.FieldDefaults;
 import java.time.Instant;
 import java.util.List;
 
-
 @Entity
 @Table(name = "apartments")
 @Getter
@@ -16,16 +16,19 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
 public class Apartment {
     @Id
     Long addressNumber;
     double area;
+
     @Enumerated(EnumType.STRING)
     ApartmentEnum status;
+
     Instant createdAt;
     Instant updatedAt;
 
-    @OneToMany()
+    @OneToMany(mappedBy = "apartment")
     List<Resident> residentList;
 
     @OneToOne
