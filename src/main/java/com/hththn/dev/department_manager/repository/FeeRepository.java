@@ -9,4 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface FeeRepository extends JpaRepository<Fee, Long>, JpaSpecificationExecutor<Fee> {
+
 }

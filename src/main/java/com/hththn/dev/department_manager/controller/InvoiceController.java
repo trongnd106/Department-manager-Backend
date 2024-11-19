@@ -1,15 +1,14 @@
 package com.hththn.dev.department_manager.controller;
 
-import com.hththn.dev.department_manager.dto.request.InvoiceCreateRequest;
+import com.hththn.dev.department_manager.dto.request.InvoiceRequest;
 import com.hththn.dev.department_manager.dto.response.ApiResponse;
+import com.hththn.dev.department_manager.dto.response.InvoiceResponse;
 import com.hththn.dev.department_manager.dto.response.PaginatedResponse;
-import com.hththn.dev.department_manager.entity.Fee;
 import com.hththn.dev.department_manager.entity.Invoice;
 import com.hththn.dev.department_manager.service.InvoiceService;
 import com.turkraft.springfilter.boot.Filter;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -25,28 +24,28 @@ public class InvoiceController {
 
     //fetch all invoices
     @GetMapping
-    public ResponseEntity<PaginatedResponse<Invoice>> getAllInvoices(@Filter Specification<Invoice> spec, Pageable pageable){
-        PaginatedResponse<Invoice> invoiceResponses = this.invoiceService.fetchAllInvoices(spec, pageable);
+    public ResponseEntity<PaginatedResponse<InvoiceResponse>> getAllInvoices(@Filter Specification<Invoice> spec, Pageable pageable){
+        PaginatedResponse<InvoiceResponse> invoiceResponses = this.invoiceService.fetchAllInvoices(spec, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(invoiceResponses);
     }
 
     //fetch invoice by id
     @GetMapping("/{id}")
-    public ResponseEntity<Invoice> getInvoiceById(@PathVariable String id) throws Exception {
-        Invoice invoice = this.invoiceService.fetchInvoiceById(id);
+    public ResponseEntity<InvoiceResponse> getInvoiceById(@PathVariable String id) throws Exception {
+        InvoiceResponse invoice = this.invoiceService.fetchInvoiceById(id);
         return ResponseEntity.status(HttpStatus.OK).body(invoice);
     }
 
     @PostMapping
-    public ResponseEntity<Invoice> createInvoice(@Valid @RequestBody InvoiceCreateRequest apiInvoice) throws Exception  {
-        Invoice invoice = this.invoiceService.createInvoice(apiInvoice);
+    public ResponseEntity<InvoiceResponse> createInvoice(@Valid @RequestBody InvoiceRequest apiInvoice) throws Exception  {
+        InvoiceResponse invoice = this.invoiceService.createInvoice(apiInvoice);
         return ResponseEntity.status(HttpStatus.CREATED).body(invoice);
     }
 
     //update invoice
     @PutMapping()
-    public ResponseEntity<Invoice> updateInvoice(@RequestBody Invoice apiInvoice) throws Exception {
-        Invoice invoice = this.invoiceService.updateInvoice(apiInvoice);
+    public ResponseEntity<InvoiceResponse> updateInvoice(@RequestBody InvoiceRequest apiInvoice) throws Exception {
+        InvoiceResponse invoice = this.invoiceService.updateInvoice(apiInvoice);
         return ResponseEntity.status(HttpStatus.OK).body(invoice);
     }
 

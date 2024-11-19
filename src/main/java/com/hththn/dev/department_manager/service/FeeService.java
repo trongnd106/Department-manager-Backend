@@ -32,11 +32,11 @@ public class FeeService {
         return page;
     }
 
-    public Fee fetchFeeById (Long id) throws Exception {
-        return feeRepository.findById(id).orElseThrow(() -> new UserInfoException("Fee with code = " + id + " is not found"));
+    public Fee fetchFeeById (Long id) throws RuntimeException {
+        return feeRepository.findById(id).orElseThrow(() -> new RuntimeException("Fee with code = " + id + " is not found"));
     }
 
-    public Fee createFee (FeeCreateRequest feeCreateRequest) throws Exception {
+    public Fee createFee (FeeCreateRequest feeCreateRequest) throws RuntimeException {
         Fee fee = new Fee();
         fee.setName(feeCreateRequest.getName());
         fee.setDescription(feeCreateRequest.getDescription());
@@ -45,7 +45,7 @@ public class FeeService {
         return this.feeRepository.save(fee);
     }
 
-    public Fee updateFee (Fee fee) throws Exception {
+    public Fee updateFee (Fee fee) throws RuntimeException {
         Fee oldFee = this.fetchFeeById(fee.getId());
         if(oldFee != null) {
             if(fee.getName() != null) oldFee.setName(fee.getName());
@@ -53,13 +53,13 @@ public class FeeService {
             if(fee.getFeeTypeEnum() != null) oldFee.setFeeTypeEnum(fee.getFeeTypeEnum());
             if(fee.getUnitPrice() != null) oldFee.setUnitPrice(fee.getUnitPrice());
         } else {
-            throw new Exception("Fee with code = " + fee.getId() + " is not found");
+            throw new RuntimeException("Fee with code = " + fee.getId() + " is not found");
         }
         return this.feeRepository.save(oldFee);
     }
 
     //No exception handling is needed in this method
-    public ApiResponse<String> deleteFee(Long id) throws Exception {
+    public ApiResponse<String> deleteFee(Long id) throws RuntimeException {
        Fee fee = this.fetchFeeById(id);
        this.feeRepository.delete(fee);
 
