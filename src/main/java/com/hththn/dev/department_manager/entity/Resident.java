@@ -4,10 +4,12 @@ import java.time.Instant;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.hththn.dev.department_manager.constant.ResidentEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -16,37 +18,52 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "residents")
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Resident {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
     String name;
 
     LocalDate dob;
-    String status;
+
+    @ManyToOne()
+    @JoinColumn(name = "addressNumber")
+    @JsonIgnore
+    Apartment apartment;
+    @Enumerated(EnumType.STRING)
+    ResidentEnum status;
     LocalDate statusDate;
 
-
-    @ManyToOne
-    @JoinColumn(name = "address_number")
-    Apartment apartment;
-
     Instant createdAt;
-    Instant updatedAt;
 
     @PrePersist
     public void beforeCreate() {
         this.createdAt = Instant.now();
+        this.statusDate = LocalDate.now();
+    }
+
+    @Transient  // field used to compare with status, not saved into database
+    ResidentEnum previousStatus;
+
+    @Transient
+    Long apartmentId;
+
+    @PostLoad
+    public void onLoad() {
+        this.previousStatus = this.status;
+        this.apartmentId = apartment != null ? apartment.getAddressNumber() : null;
     }
 
     @PreUpdate
     public void beforeUpdate() {
-        this.updatedAt = Instant.now();
+        if (!status.equals(previousStatus)) {  // if status changed
+            this.statusDate = LocalDate.now();  // update statusDate
+        }
+        this.previousStatus = this.status;
     }
 
 }
-

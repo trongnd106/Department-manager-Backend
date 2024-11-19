@@ -1,6 +1,7 @@
 package com.hththn.dev.department_manager.controller;
 
 import com.hththn.dev.department_manager.dto.request.ResidentCreateRequest;
+import com.hththn.dev.department_manager.dto.response.ApiResponse;
 import com.hththn.dev.department_manager.dto.response.PaginatedResponse;
 import com.hththn.dev.department_manager.entity.Resident;
 import com.hththn.dev.department_manager.service.ResidentService;
@@ -44,9 +45,9 @@ public class ResidentController {
 
     //Delete resident by id
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteResident(@PathVariable("id") long id) throws Exception {
-        this.residentService.deleteResident(id);
-        return ResponseEntity.ok("deleted resident successfully");
+    public ResponseEntity<ApiResponse<String>> deleteResident(@PathVariable("id") long id) throws Exception {
+        ApiResponse<String> response = this.residentService.deleteResident(id);
+        return ResponseEntity.ok(response);
     }
 
     //Update resident
