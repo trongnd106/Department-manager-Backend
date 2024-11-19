@@ -65,5 +65,4 @@ public class JwtConfig {
         return jwtAuthenticationConverter;
     }
     //jwtDecoder is used to decode token and JwtAuthenticationConverter is used to extract the authorities (roles/permissions) from the decoded token.
-
 }
