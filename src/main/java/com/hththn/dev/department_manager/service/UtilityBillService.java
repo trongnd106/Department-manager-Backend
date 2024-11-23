@@ -10,10 +10,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -31,7 +28,7 @@ public class UtilityBillService {
     UtilityBillRepository utilityBillRepository;
     ApartmentRepository apartmentRepository;
 
-    public List<UtilityBill> importExcel(MultipartFile file) {
+    public List<UtilityBill> importExcel(MultipartFile file, String date) {
         List<UtilityBill> utilityBills = new ArrayList<>();
         try (InputStream inputStream = file.getInputStream()) {
             Workbook workbook = WorkbookFactory.create(inputStream);
@@ -40,6 +37,11 @@ public class UtilityBillService {
             for (Row row : sheet) {
                 // Skip the header row
                 if (row.getRowNum() == 0) continue;
+
+                // Check if the row is empty
+                if (row.getCell(0) == null || row.getCell(0).getCellType() == CellType.BLANK) {
+                    break; // Exit the loop if the row is empty
+                }
 
                 Long apartmentId = (long) row.getCell(0).getNumericCellValue();
                 double electricity = row.getCell(1).getNumericCellValue();
@@ -51,9 +53,11 @@ public class UtilityBillService {
 
                 UtilityBill utilityBill = UtilityBill.builder()
                         .apartment(apartment)
+                        .apartmentId(apartmentId)
                         .electricity(electricity)
                         .water(water)
                         .internet(internet)
+                        .date(date)
                         .build();
 
                 utilityBills.add(utilityBill);
