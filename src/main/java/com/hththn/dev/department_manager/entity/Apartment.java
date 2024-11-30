@@ -31,6 +31,9 @@ public class Apartment {
     @OneToMany(mappedBy = "apartment")
     List<Resident> residentList;
 
+    @OneToMany(mappedBy = "apartment")
+    List<Vehicle> vehicleList;
+
     @OneToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "id")  //The name of the foreign key column in the apartments table refers to the id in the residents table.
     Resident owner;
