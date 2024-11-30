@@ -18,5 +18,6 @@ public class ApartmentCreateRequest {
     String status;
     @NotNull
     Long ownerId;
+    Long ownerPhone;
     List<Long> memberIds;
 }

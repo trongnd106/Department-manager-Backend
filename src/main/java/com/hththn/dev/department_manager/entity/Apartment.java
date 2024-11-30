@@ -37,6 +37,10 @@ public class Apartment {
     @OneToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "id")  //The name of the foreign key column in the apartments table refers to the id in the residents table.
     Resident owner;
+    Long ownerPhone;
+
+    Integer numberOfMembers;
+
     @PrePersist
     public void beforeCreate() {
         this.createdAt = Instant.now();
@@ -44,5 +48,9 @@ public class Apartment {
     @PreUpdate
     public void beforeUpdate() {
         this.updatedAt = Instant.now();
+    }
+    @PostLoad
+    public void onLoad() {
+        numberOfMembers = residentList.size();
     }
 }
