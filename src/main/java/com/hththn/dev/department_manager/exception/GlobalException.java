@@ -1,6 +1,7 @@
 package com.hththn.dev.department_manager.exception;
 
 
+import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.hththn.dev.department_manager.dto.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,6 +52,14 @@ public class GlobalException {
         res.setMessage("Validation failed");
         res.setData(errors);
 
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
+
+    @ExceptionHandler(TokenResponseException.class)
+    public ResponseEntity<ApiResponse<Object>> handleTokenResponseException(TokenResponseException ex){
+        ApiResponse<Object> res = new ApiResponse<Object>();
+        res.setCode(HttpStatus.BAD_REQUEST.value());  // 400 Bad request
+        res.setMessage("Invalid grant");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
 }

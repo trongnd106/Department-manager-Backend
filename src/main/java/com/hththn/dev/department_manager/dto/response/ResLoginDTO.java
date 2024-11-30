@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level= AccessLevel.PRIVATE)
+//@Builder
 public class ResLoginDTO {
     String accessToken;
     UserLogin user;
@@ -15,6 +16,7 @@ public class ResLoginDTO {
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
+    @Builder
     public static class UserLogin {
         long id;
         String email;

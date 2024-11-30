@@ -1,7 +1,7 @@
 server:
   port: 8080
-  servlet:
-    context-path: /department-system
+#  servlet:
+#    context-path: /department-system
 
 
 spring:
@@ -14,10 +14,22 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 367801838340-ns4rtjc8bt6oqiaeqsacn5hinlqplpho.apps.googleusercontent.com
+            client-secret: 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
+            redirect-uri: "http://localhost:5173/auth/google/callback"
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            resource-server:
+              opaque-token:
+                introspection-uri: "https://googleapis.com"
 
 authentication:
   jwt:
     base64-secret: 2s+qtEY90ymZ/PQhalri+aL2yI7084rVyTtU4ykYD+8/I4MNfUhd2gwlVRAB28MOMOkMtXxys2ALGvI8qSZgJw==
     access-token-validity-in-seconds: 36000
     refresh-token-validity-in-seconds: 86400
+

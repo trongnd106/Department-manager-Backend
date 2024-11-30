@@ -42,8 +42,9 @@ public class SecurityConfig{
 
 
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/","/api/v1/auth/login","api/v1/auth/refresh","/h2-console/**","api/v1/users/register").permitAll()  // Allow non-authenticated access to /login
-                        .anyRequest().authenticated()  // Others need to be authenticated
+//                        .requestMatchers("/","/api/v1/auth/login","api/v1/auth/refresh","/h2-console/**","api/v1/users/register"
+//                        , "users/auth/social-login","users/auth/social-login/**", "users/auth/social/callback", "users/login").permitAll()  // Allow non-authenticated access to /login
+                        .anyRequest().permitAll()  // Others need to be authenticated
                 )
 
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults())//Config OAuth2

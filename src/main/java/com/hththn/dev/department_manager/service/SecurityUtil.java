@@ -10,6 +10,7 @@ import com.hththn.dev.department_manager.dto.request.UserLoginDTO;
 import com.hththn.dev.department_manager.dto.response.ResLoginDTO;
 import com.hththn.dev.department_manager.entity.User;
 import com.hththn.dev.department_manager.exception.UserInfoException;
+import com.hththn.dev.department_manager.repository.UserRepository;
 import com.nimbusds.jose.util.Base64;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,12 +36,14 @@ public class SecurityUtil {
     private final JwtEncoder jwtEncoder;
     private final JwtDecoder jwtDecoder;
     private final UserService userService;
+    private final UserRepository userRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    public SecurityUtil(JwtEncoder jwtEncoder, JwtDecoder jwtDecoder, UserService userService, AuthenticationManagerBuilder authenticationManagerBuilder) {
+    public SecurityUtil(JwtEncoder jwtEncoder, JwtDecoder jwtDecoder, UserService userService, UserRepository userRepository, AuthenticationManagerBuilder authenticationManagerBuilder) {
         this.jwtEncoder = jwtEncoder;
         this.jwtDecoder = jwtDecoder;
         this.userService = userService;
+        this.userRepository = userRepository;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
     }
 
@@ -137,7 +140,7 @@ public class SecurityUtil {
         }
         String email = decodedToken.getSubject();
         // check user by token + email
-        User currentUser = this.userService.getUserByRefreshTokenAndEmail(refresh_token, email);
+        User currentUser = this.userRepository.findByEmail(email);
         if (currentUser == null) {
             throw new UserInfoException("Refresh token is not valid");
         }

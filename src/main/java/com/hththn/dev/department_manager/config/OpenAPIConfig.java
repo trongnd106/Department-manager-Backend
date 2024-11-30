@@ -22,7 +22,7 @@ public class OpenAPIConfig {
         return new OpenAPI().info(new Info().title("API doc")
                         .version("1.0.0").description("description")
                         .license(new License().name("API License").url("http://domain.vn/license")))
-                .servers(List.of(new Server().url("http://localhost:8080/department-system").description("System")))
+                .servers(List.of(new Server().url("http://localhost:8080").description("System")))
                 .components(
                         new Components()
                                 .addSecuritySchemes(
