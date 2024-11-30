@@ -33,7 +33,6 @@ public class UserDetailsCustom implements UserDetailsService {
                 throw new RuntimeException(e);
             }
         }
-
         return new User(
                 user.getEmail(),
                 user.getPassword(),
