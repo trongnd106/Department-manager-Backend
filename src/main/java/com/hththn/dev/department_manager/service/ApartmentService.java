@@ -53,6 +53,7 @@ public class ApartmentService {
                 .addressNumber(request.getAddressNumber())
                 .area(request.getArea())
                 .owner(owner)
+                .ownerPhone(request.getOwnerPhone())
                 .status(ApartmentEnum.fromString(request.getStatus()))
                 .residentList(members)
                 .build();
