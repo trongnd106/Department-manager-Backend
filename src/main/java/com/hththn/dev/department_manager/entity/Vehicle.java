@@ -7,6 +7,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "vehicles")
@@ -21,15 +22,17 @@ public class Vehicle {
     Long id;
 
     VehicleEnum category;
-    @ManyToOne
+
+    @ManyToOne()
+    @JoinColumn(name = "address_id")
     @JsonIgnore
     Apartment apartment;
 
-    Instant createdAt;
+    LocalDate registerDate;
 
     @PrePersist
     public void beforeCreate() {
-        this.createdAt = Instant.now();
+        this.registerDate = LocalDate.now();
     }
 
     @Transient
