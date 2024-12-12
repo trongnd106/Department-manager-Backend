@@ -16,6 +16,7 @@ import com.hththn.dev.department_manager.repository.UserRepository;
 import com.nimbusds.jose.shaded.gson.Gson;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
@@ -36,6 +37,7 @@ import java.util.Optional;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 public class AuthService {
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
     String googleClientId;
@@ -60,12 +62,12 @@ public class AuthService {
     final UserRepository userRepository;
     final SecurityUtil securityUtil;
 
-    public AuthService(AuthenticationManagerBuilder authenticationManagerBuilder, UserService userService, UserRepository userRepository, SecurityUtil securityUtil) {
-        this.authenticationManagerBuilder = authenticationManagerBuilder;
-        this.userService = userService;
-        this.userRepository = userRepository;
-        this.securityUtil = securityUtil;
-    }
+//    public AuthService(AuthenticationManagerBuilder authenticationManagerBuilder, UserService userService, UserRepository userRepository, SecurityUtil securityUtil) {
+//        this.authenticationManagerBuilder = authenticationManagerBuilder;
+//        this.userService = userService;
+//        this.userRepository = userRepository;
+//        this.securityUtil = securityUtil;
+//    }
 
     // get user info
     public ResLoginDTO getLogin(UserLoginDTO loginDto) {
