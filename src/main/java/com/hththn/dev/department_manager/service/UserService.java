@@ -100,6 +100,7 @@ public class UserService {
         String hashPassword = this.passwordEncoder.encode(userCreateRequest.getPassword());
         user.setPassword(hashPassword);
         user.setEmail(userCreateRequest.getUsername());
+        user.setAuthType("normal");
         return this.userRepository.save(user);
     }
     public void updateUserToken(String token, String email) {
