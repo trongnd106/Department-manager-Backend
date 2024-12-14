@@ -1,6 +1,7 @@
 package com.hththn.dev.department_manager.controller;
 
 import com.hththn.dev.department_manager.dto.request.ResidentCreateRequest;
+import com.hththn.dev.department_manager.dto.request.ResidentUpdateRequest;
 import com.hththn.dev.department_manager.dto.response.ApiResponse;
 import com.hththn.dev.department_manager.dto.response.PaginatedResponse;
 import com.hththn.dev.department_manager.entity.Resident;
@@ -52,7 +53,7 @@ public class ResidentController {
 
     //Update resident
     @PutMapping()
-    public ResponseEntity<Resident> updateUser(@RequestBody Resident apiResident) throws Exception {
+    public ResponseEntity<Resident> updateUser(@RequestBody ResidentUpdateRequest apiResident) throws Exception {
         Resident resident = this.residentService.updateResident(apiResident);
         return ResponseEntity.ok(resident);
     }

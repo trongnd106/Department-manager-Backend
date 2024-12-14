@@ -33,10 +33,10 @@ public class Apartment {
     Instant createdAt;
     Instant updatedAt;
 
-    @OneToMany(mappedBy = "apartment")
+    @OneToMany(mappedBy = "apartment", cascade = CascadeType.ALL)
     List<Resident> residentList;
 
-    @OneToMany(mappedBy = "apartment")
+    @OneToMany(mappedBy = "apartment", cascade = CascadeType.ALL)
     List<Vehicle> vehicleList;
 
     @OneToOne

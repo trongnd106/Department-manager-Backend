@@ -41,6 +41,7 @@ public class ApartmentService {
         var owner = residentService.fetchResidentById(request.getOwnerId());
 
         List<Resident> members = residentRepository.findAllById(request.getMemberIds());
+        members.add(owner);
 
         // Handle for case: found members != input member ?
         List<Long> foundMem = members.stream().map(Resident::getId).toList();
@@ -59,10 +60,16 @@ public class ApartmentService {
                 .build();
 
         Apartment saved = apartmentRepository.save(apartment);
-        owner.setApartment(saved);
-        members.forEach(member -> member.setApartment(saved));
+        //Apartment test = apartmentRepository.findById(saved.getAddressNumber()).orElseThrow(() -> new RuntimeException("Failed to retrieve updated apartment"));
 
-        return saved;
+        members.forEach(member -> {
+            member.setApartment(saved);
+            residentRepository.save(member);  // Sync changes for each member
+        });
+
+        // Fetch the apartment with updated relationships
+        return apartmentRepository.findById(saved.getAddressNumber())
+                .orElseThrow(() -> new RuntimeException("Failed to retrieve updated apartment"));
     }
 
     public PaginatedResponse<Apartment> getAll(Specification<Apartment> spec, Pageable pageable){
@@ -86,35 +93,44 @@ public class ApartmentService {
         Apartment apartment = apartmentRepository.findById(addressID)
                 .orElseThrow(() -> new EntityNotFoundException("Not found apartment " + addressID));
 
+        List<Long> requestResidents = Optional.ofNullable(request.getResidents()).orElse(Collections.emptyList());
+        List<Resident> validResidents = residentRepository.findAllById(requestResidents);
+
         // update owner + apartment status
         if (request.getOwnerId() != null) {
             Resident newOwner = residentService.fetchResidentById(request.getOwnerId());
+            Resident currentOwner = apartment.getOwner();
+            validResidents.add(newOwner);
+            if (currentOwner != null && !currentOwner.getId().equals(newOwner.getId())) {
+                currentOwner.setApartment(null); // Clear the current owner's apartment
+                residentRepository.save(currentOwner);
+            }
+
             apartment.setOwner(newOwner);
+            newOwner.setApartment(apartment);
+            residentRepository.save(newOwner); // Sync changes for the new owner
         }
         if(request.getStatus()!=null) apartment.setStatus(ApartmentEnum.valueOf(request.getStatus()));
 
         List<Resident> residentList = Optional.ofNullable(apartment.getResidentList()).orElse(Collections.emptyList());
-        List<Long> requestResidents = Optional.ofNullable(request.getResidents()).orElse(Collections.emptyList());
 
-        // get current resident list
-        List<Long> currentResidentIds = residentList.stream()
-                .map(Resident::getId)
-                .toList();
+        apartment.setResidentList(validResidents);
+        apartmentRepository.save(apartment);
 
+        // Save residents
+        validResidents.forEach(requestResident -> {
+            requestResident.setApartment(apartment);
+            residentRepository.save(requestResident);
+        });
         // Remove resident who not in request list
         residentList.forEach(resident -> {
             if (!requestResidents.contains(resident.getId())) {
                 resident.setApartment(null);   // set their address = null
+                residentRepository.save(resident);
             }
         });
 
-        // Add resident who not in current list
-        List<Resident> residentsToAdd = requestResidents.stream()
-                .filter(residentId -> !currentResidentIds.contains(residentId))
-                .map(residentService::fetchResidentById)
-                .toList();
-        apartment.getResidentList().addAll(residentsToAdd);
-
-        return apartmentRepository.save(apartment);
+        return apartmentRepository.findById(addressID)
+                .orElseThrow(() -> new RuntimeException("Failed to retrieve updated apartment"));
     }
 }

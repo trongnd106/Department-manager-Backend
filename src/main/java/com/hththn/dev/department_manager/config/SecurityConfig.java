@@ -42,8 +42,15 @@ public class SecurityConfig{
 
 
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/","/api/v1/auth/login","api/v1/auth/refresh","/h2-console/**","api/v1/users/register"
-                        , "users/auth/social-login","users/auth/social-login/**", "users/auth/social/callback", "users/login").permitAll()  // Allow non-authenticated access to /login
+                        .requestMatchers("/",
+                                "/api/v1/auth/login",
+                                "api/v1/auth/refresh",
+                                "/h2-console/**",
+                                "/api/v1/users/register",
+                                "/users/auth/social-login",
+                                "/users/auth/social-login/**",
+                                "/users/auth/social/callback",
+                                "/users/login").permitAll()  // Allow non-authenticated access to /login
                         .anyRequest().permitAll()  // Others need to be authenticated
                 )
 

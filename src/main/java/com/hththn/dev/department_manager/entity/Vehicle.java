@@ -19,7 +19,7 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Vehicle {
     @Id
-    Long id;
+    String id;
 
     VehicleEnum category;
 

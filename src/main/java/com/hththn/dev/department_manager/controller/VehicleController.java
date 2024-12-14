@@ -31,7 +31,7 @@ public class VehicleController {
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<String> deleteVehicle(@PathVariable("id") long vehicleId) throws Exception {
-        return this.vehicleService.deleteVehicle(vehicleId);
+    public ApiResponse<String> deleteVehicle(@PathVariable("id") Long apartmentId, @RequestBody Vehicle vehicle) throws Exception {
+        return this.vehicleService.deleteVehicle(apartmentId, vehicle);
     }
 }

@@ -1,6 +1,7 @@
 package com.hththn.dev.department_manager.service;
 
 import com.hththn.dev.department_manager.dto.response.ApiResponse;
+import com.hththn.dev.department_manager.entity.Apartment;
 import com.hththn.dev.department_manager.entity.Vehicle;
 import com.hththn.dev.department_manager.repository.ApartmentRepository;
 import com.hththn.dev.department_manager.repository.VehicleRepository;
@@ -38,8 +39,13 @@ public class VehicleService {
     }
 
     @Transactional
-    public ApiResponse<String> deleteVehicle(Long id) throws Exception {
-        Vehicle vehicle = this.vehicleRepository.findById(id).orElse(null);
+    public ApiResponse<String> deleteVehicle(Long id, Vehicle vehicleRequest) throws Exception {
+        Apartment apartment = this.apartmentRepository.findById(id).orElseThrow(() -> new RuntimeException("Apartment with id " + id + " does not exist"));
+        Vehicle vehicle = this.vehicleRepository.findById(vehicleRequest.getId()).orElse(null);
+        List<Vehicle> vehicleList = apartment.getVehicleList();
+        vehicleList.remove(vehicle);
+        apartment.setVehicleList(vehicleList);
+        apartmentRepository.saveAndFlush(apartment);
         assert vehicle != null;
         this.vehicleRepository.delete(vehicle);
         ApiResponse<String> response = new ApiResponse<>();
