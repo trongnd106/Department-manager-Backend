@@ -2,11 +2,17 @@ package com.hththn.dev.department_manager.controller;
 
 
 import com.hththn.dev.department_manager.dto.response.ApiResponse;
+import com.hththn.dev.department_manager.dto.response.PaginatedResponse;
+import com.hththn.dev.department_manager.entity.Apartment;
 import com.hththn.dev.department_manager.entity.Vehicle;
 import com.hththn.dev.department_manager.service.VehicleService;
+import com.turkraft.springfilter.boot.Filter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,9 +31,15 @@ public class VehicleController {
         return ResponseEntity.ok(this.vehicleService.create(vehicle));
     }
 
+    @GetMapping
+    public ResponseEntity<PaginatedResponse<Vehicle>> getAllVehicles(@Filter Specification<Vehicle> spec, Pageable pageable){
+        PaginatedResponse<Vehicle> result = vehicleService.getAll(spec, pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<List<Vehicle>> getAllVehiclesById(@PathVariable("id") long apartmentId) {
-        return ResponseEntity.ok(this.vehicleService.findAll(apartmentId));
+        return ResponseEntity.ok(this.vehicleService.findAllByApartmentId(apartmentId));
     }
 
     @DeleteMapping("/{id}")

@@ -1,6 +1,7 @@
 package com.hththn.dev.department_manager.service;
 
 import com.hththn.dev.department_manager.dto.response.ApiResponse;
+import com.hththn.dev.department_manager.dto.response.PaginatedResponse;
 import com.hththn.dev.department_manager.entity.Apartment;
 import com.hththn.dev.department_manager.entity.Vehicle;
 import com.hththn.dev.department_manager.repository.ApartmentRepository;
@@ -8,6 +9,9 @@ import com.hththn.dev.department_manager.repository.VehicleRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,11 +26,23 @@ public class VehicleService {
     ApartmentRepository apartmentRepository;
 
     @Transactional
-    public List<Vehicle> findAll(long apartmentId) {
+    public List<Vehicle> findAllByApartmentId(long apartmentId) {
         if (!this.apartmentRepository.existsById(apartmentId)) {
             throw new RuntimeException("Apartment with id " + apartmentId + " does not exist");
         }
         return this.vehicleRepository.findAllByApartment_AddressNumber(apartmentId);
+    }
+
+    @Transactional
+    public PaginatedResponse<Vehicle> getAll(Specification<Vehicle> spec, Pageable pageable) {
+        Page<Vehicle> pageVehicle = vehicleRepository.findAll(spec,pageable);
+        return PaginatedResponse.<Vehicle>builder()
+                .pageSize(pageable.getPageSize())
+                .curPage(pageable.getPageNumber()+1)
+                .totalPages(pageVehicle.getTotalPages())
+                .totalElements(pageVehicle.getNumberOfElements())
+                .result(pageVehicle.getContent())
+                .build();
     }
 
     @Transactional
