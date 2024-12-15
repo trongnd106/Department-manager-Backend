@@ -23,6 +23,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -38,9 +39,12 @@ public class ApartmentService {
 
     @Transactional
     public Apartment create(ApartmentCreateRequest request) {
+        if (this.apartmentRepository.findById(request.getAddressNumber()).isPresent()) {
+            throw new RuntimeException("Apartment with id = " + request.getAddressNumber() + " already exists");
+        }
         var owner = residentService.fetchResidentById(request.getOwnerId());
 
-        List<Resident> members = residentRepository.findAllById(request.getMemberIds());
+        List<Resident> members = new ArrayList<>(residentRepository.findAllById(request.getMemberIds()));
         members.add(owner);
 
         // Handle for case: found members != input member ?
