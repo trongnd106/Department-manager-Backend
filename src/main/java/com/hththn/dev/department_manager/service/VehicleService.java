@@ -47,6 +47,9 @@ public class VehicleService {
 
     @Transactional
     public Vehicle create(Vehicle vehicleRequest) {
+        if (this.vehicleRepository.findById(vehicleRequest.getId()).isPresent()) {
+            throw new RuntimeException("Vehicle with id = " + vehicleRequest.getId()+ " already exists");
+        }
         Vehicle vehicle = new Vehicle();
         vehicle.setId(vehicleRequest.getId());
         vehicle.setCategory(vehicleRequest.getCategory());

@@ -12,6 +12,8 @@ import java.util.List;
 @Builder
 public class ApartmentUpdateRequest {
     Long ownerId;
+    Double area;
+    Long ownerPhone;
     String status;
     List<Long> residents;
 }

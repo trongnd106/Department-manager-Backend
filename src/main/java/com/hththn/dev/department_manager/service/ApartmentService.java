@@ -115,6 +115,8 @@ public class ApartmentService {
             residentRepository.save(newOwner); // Sync changes for the new owner
         }
         if(request.getStatus()!=null) apartment.setStatus(ApartmentEnum.valueOf(request.getStatus()));
+        if(request.getArea() != null) apartment.setArea(request.getArea());
+        if(request.getOwnerPhone()!=null) apartment.setOwnerPhone(request.getOwnerPhone());
 
         List<Resident> residentList = Optional.ofNullable(apartment.getResidentList()).orElse(Collections.emptyList());
 
