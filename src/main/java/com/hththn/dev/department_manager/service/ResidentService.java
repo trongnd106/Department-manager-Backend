@@ -57,24 +57,35 @@ public class ResidentService {
             throw new RuntimeException("Resident with id = " + resident.getId() + " already exists");
         }
 
-        Apartment apartment = apartmentRepository.findById(resident.getAddressNumber())
-                .orElseThrow(() -> new RuntimeException("Apartment with id = " + resident.getAddressNumber() + " does not exist"));
-        List<Resident> residentList = apartment.getResidentList();
+        if(resident.getAddressNumber() != null) {
+            Apartment apartment = apartmentRepository.findById(resident.getAddressNumber())
+                    .orElseThrow(() -> new RuntimeException("Apartment with id = " + resident.getAddressNumber() + " does not exist"));
+            List<Resident> residentList = apartment.getResidentList();
 
-        Resident resident1 = Resident.builder()
-                .id(resident.getId())
-                .name(resident.getName())
-                .dob(resident.getDob())
-                .status(ResidentEnum.fromString(resident.getStatus()))
-                .build();
-        // Luu 2 chieu de dong bo, nhung createdAt dang bi null
-        residentList.add(resident1);
-        apartment.setResidentList(residentList);
-        apartmentRepository.save(apartment);
-        resident1.setApartment(apartment);
+            Resident resident1 = Resident.builder()
+                    .id(resident.getId())
+                    .name(resident.getName())
+                    .dob(resident.getDob())
+                    .status(ResidentEnum.fromString(resident.getStatus()))
+                    .build();
+            // Luu 2 chieu de dong bo, nhung createdAt dang bi null
+            residentList.add(resident1);
+            apartment.setResidentList(residentList);
+            apartmentRepository.save(apartment);
+            resident1.setApartment(apartment);
 
-        return this.residentRepository.save(resident1);
-
+            return this.residentRepository.save(resident1);
+        }
+        else {
+            Resident resident1 = Resident.builder()
+                    .id(resident.getId())
+                    .name(resident.getName())
+                    .dob(resident.getDob())
+                    .status(ResidentEnum.fromString(resident.getStatus()))
+                    .apartment(null)
+                    .build();
+            return this.residentRepository.save(resident1);
+        }
     }
 
     @Transactional
