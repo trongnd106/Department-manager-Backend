@@ -1,15 +1,14 @@
 package com.hththn.dev.department_manager.service;
 
+import com.hththn.dev.department_manager.constant.PaymentEnum;
 import com.hththn.dev.department_manager.dto.request.InvoiceRequest;
 import com.hththn.dev.department_manager.dto.response.ApiResponse;
+import com.hththn.dev.department_manager.dto.response.InvoiceApartmentResponse;
 import com.hththn.dev.department_manager.dto.response.InvoiceResponse;
 import com.hththn.dev.department_manager.dto.response.PaginatedResponse;
-import com.hththn.dev.department_manager.entity.Fee;
-import com.hththn.dev.department_manager.entity.FeeInvoice;
-import com.hththn.dev.department_manager.entity.Invoice;
-import com.hththn.dev.department_manager.repository.FeeInvoiceRepository;
-import com.hththn.dev.department_manager.repository.FeeRepository;
-import com.hththn.dev.department_manager.repository.InvoiceRepository;
+import com.hththn.dev.department_manager.entity.*;
+import com.hththn.dev.department_manager.repository.*;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +30,8 @@ public class InvoiceService {
     private final InvoiceRepository invoiceRepository;
     private final FeeRepository feeRepository;
     private final FeeInvoiceRepository feeInvoiceRepository;
+    private final ApartmentRepository apartmentRepository;
+    private final InvoiceApartmentRepository invoiceApartmentRepository;
 
     public PaginatedResponse<InvoiceResponse> fetchAllInvoices(Specification<Invoice> spec, Pageable pageable) {
         Page<Invoice> pageInvoice = invoiceRepository.findAll(spec, pageable);
@@ -85,6 +86,12 @@ public class InvoiceService {
                 .build();
     }
 
+    @Transactional
+    public List<InvoiceApartmentResponse> fetchAllInvoicesByApartmentId(Long id) throws RuntimeException {
+        Apartment apartment = apartmentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Not found apartment " + id));
+        return invoiceApartmentRepository.findInvoicesByApartmentId(id);
+    }
 
     @Transactional
     public InvoiceResponse createInvoice(InvoiceRequest request) throws RuntimeException {
@@ -109,6 +116,15 @@ public class InvoiceService {
 
         LocalDate localDate = Objects.requireNonNull(invoiceRepository.findById(invoice.getId()).orElse(null)).getUpdatedAt().atZone(ZoneId.systemDefault()).toLocalDate();
         List<Fee> feeListAfterCreate = feeInvoiceRepository.findFeesByInvoiceId(request.getInvoiceId());
+
+        List<Apartment> apartmentList = apartmentRepository.findAll();
+        for (Apartment a : apartmentList) {
+            InvoiceApartment invoiceApartment = new InvoiceApartment();
+            invoiceApartment.setApartment(a);
+            invoiceApartment.setInvoice(invoice);
+            invoiceApartment.setPaymentStatus(PaymentEnum.Unpaid);
+            invoiceApartmentRepository.save(invoiceApartment);
+        }
 
         return InvoiceResponse.builder()
                 .id(invoice.getId())

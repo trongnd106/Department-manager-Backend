@@ -32,6 +32,10 @@ public class Invoice {
     @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)  //cascade: used for auto updating at fees and invoices table
     List<FeeInvoice> feeInvoices;
 
+    @JsonIgnore  //hide this field
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)  //cascade: used for auto updating at fees and invoices table
+    List<InvoiceApartment> invoiceApartments;
+
     Instant updatedAt;
 
     @PrePersist
