@@ -37,7 +37,7 @@ public class InvoiceService {
         Page<Invoice> pageInvoice = invoiceRepository.findAll(spec, pageable);
         PaginatedResponse<InvoiceResponse> page = new PaginatedResponse<>();
         page.setPageSize(pageable.getPageSize());
-        page.setCurPage(pageable.getPageNumber()+1);
+        page.setCurPage(pageable.getPageNumber());
         page.setTotalPages(pageInvoice.getTotalPages());
         page.setTotalElements(pageInvoice.getNumberOfElements());
         //map Invoice to InvoiceResponse

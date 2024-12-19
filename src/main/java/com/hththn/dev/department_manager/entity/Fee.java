@@ -35,16 +35,13 @@ public class Fee {
     @OneToMany(mappedBy = "fee", cascade = CascadeType.ALL) //cascade: used for auto updating at fees and invoices table
     List<FeeInvoice> feeInvoices;
 
-    Instant createdAt;
-    Instant updatedAt;
+    LocalDate createdAt;
+    LocalDate updatedAt;
 
     @PrePersist
     public void beforeCreate() {
-        this.createdAt = Instant.now();
+        this.createdAt = LocalDate.now();
     }
     @PreUpdate
-    public void beforeUpdate() {
-
-        this.updatedAt = Instant.now();
-    }
+    public void beforeUpdate() { this.updatedAt = LocalDate.now();}
 }

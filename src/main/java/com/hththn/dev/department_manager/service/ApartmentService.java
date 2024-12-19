@@ -135,7 +135,6 @@ public class ApartmentService {
             }
         });
 
-        return apartmentRepository.findById(addressID)
-                .orElseThrow(() -> new RuntimeException("Failed to retrieve updated apartment"));
+        return apartment;
     }
 }

@@ -10,6 +10,7 @@ import com.turkraft.springfilter.boot.Filter;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -33,7 +34,10 @@ public class UtilityBillController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllUtilityBills(@Filter Specification<UtilityBill> spec, Pageable pageable) {
+    public ResponseEntity<?> getAllUtilityBills(@Filter Specification<UtilityBill> spec,
+                                                @RequestParam(value = "page", defaultValue = "1") int page,
+                                                @RequestParam(value = "size", defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
         PaginatedResponse<UtilityBill> responses = this.utilityBillService.fetchUtilityBills(spec, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }

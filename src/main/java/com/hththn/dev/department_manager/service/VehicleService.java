@@ -38,7 +38,7 @@ public class VehicleService {
         Page<Vehicle> pageVehicle = vehicleRepository.findAll(spec,pageable);
         return PaginatedResponse.<Vehicle>builder()
                 .pageSize(pageable.getPageSize())
-                .curPage(pageable.getPageNumber()+1)
+                .curPage(pageable.getPageNumber())
                 .totalPages(pageVehicle.getTotalPages())
                 .totalElements(pageVehicle.getNumberOfElements())
                 .result(pageVehicle.getContent())

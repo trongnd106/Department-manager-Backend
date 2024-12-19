@@ -34,11 +34,11 @@ public class UtilityBill {
     @JsonIgnore
     Apartment apartment;
 
-    Instant createdAt;
+    LocalDate createdAt;
 
     @PrePersist
     public void beforeCreate() {
-        this.createdAt = Instant.now();
+        this.createdAt = LocalDate.now();
     }
 
     @Transient

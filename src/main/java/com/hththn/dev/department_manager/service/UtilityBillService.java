@@ -80,7 +80,7 @@ public class UtilityBillService {
         Page<UtilityBill> pageUtilityBill = utilityBillRepository.findAll(spec, pageable);
         PaginatedResponse<UtilityBill> page = new PaginatedResponse<>();
         page.setPageSize(pageable.getPageSize());
-        page.setCurPage(pageable.getPageNumber()+1);
+        page.setCurPage(pageable.getPageNumber());
         page.setTotalPages(pageUtilityBill.getTotalPages());
         page.setTotalElements(pageUtilityBill.getNumberOfElements());
         page.setResult(pageUtilityBill.getContent());

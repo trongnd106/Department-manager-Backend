@@ -25,7 +25,7 @@ public class FeeService {
         Page<Fee> pageFee = feeRepository.findAll(spec, pageable);
         PaginatedResponse<Fee> page = new PaginatedResponse<>();
         page.setPageSize(pageable.getPageSize());
-        page.setCurPage(pageable.getPageNumber()+1);
+        page.setCurPage(pageable.getPageNumber());
         page.setTotalPages(pageFee.getTotalPages());
         page.setTotalElements(pageFee.getNumberOfElements());
         page.setResult(pageFee.getContent());

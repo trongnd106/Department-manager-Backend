@@ -9,6 +9,7 @@ import com.hththn.dev.department_manager.service.FeeService;
 import com.turkraft.springfilter.boot.Filter;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,10 @@ public class FeeController {
 
     //fetch all fees
     @GetMapping()
-    public ResponseEntity<PaginatedResponse<Fee>> getAllFees(@Filter Specification<Fee> spec, Pageable pageable) {
+    public ResponseEntity<PaginatedResponse<Fee>> getAllFees(@Filter Specification<Fee> spec,
+                                                             @RequestParam(value = "page", defaultValue = "1") int page,
+                                                             @RequestParam(value = "size", defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
         PaginatedResponse<Fee> feeResponses = this.feeService.fetchAllFees(spec, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(feeResponses);
     }

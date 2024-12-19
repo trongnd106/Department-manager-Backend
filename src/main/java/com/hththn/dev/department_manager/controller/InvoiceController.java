@@ -9,6 +9,7 @@ import com.hththn.dev.department_manager.service.InvoiceService;
 import com.turkraft.springfilter.boot.Filter;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,10 @@ public class InvoiceController {
 
     //fetch all invoices
     @GetMapping
-    public ResponseEntity<PaginatedResponse<InvoiceResponse>> getAllInvoices(@Filter Specification<Invoice> spec, Pageable pageable){
+    public ResponseEntity<PaginatedResponse<InvoiceResponse>> getAllInvoices(@Filter Specification<Invoice> spec,
+                                                                             @RequestParam(value = "page", defaultValue = "1") int page,
+                                                                             @RequestParam(value = "size", defaultValue = "10") int size){
+        Pageable pageable = PageRequest.of(page - 1, size);
         PaginatedResponse<InvoiceResponse> invoiceResponses = this.invoiceService.fetchAllInvoices(spec, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(invoiceResponses);
     }

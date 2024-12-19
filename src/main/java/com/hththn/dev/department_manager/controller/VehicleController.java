@@ -10,6 +10,7 @@ import com.turkraft.springfilter.boot.Filter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -32,7 +33,10 @@ public class VehicleController {
     }
 
     @GetMapping
-    public ResponseEntity<PaginatedResponse<Vehicle>> getAllVehicles(@Filter Specification<Vehicle> spec, Pageable pageable){
+    public ResponseEntity<PaginatedResponse<Vehicle>> getAllVehicles(@Filter Specification<Vehicle> spec,
+                                                                     @RequestParam(value = "page", defaultValue = "1") int page,
+                                                                     @RequestParam(value = "size", defaultValue = "10") int size){
+        Pageable pageable = PageRequest.of(page - 1, size);
         PaginatedResponse<Vehicle> result = vehicleService.getAll(spec, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }

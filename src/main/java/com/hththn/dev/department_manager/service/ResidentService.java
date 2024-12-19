@@ -38,7 +38,7 @@ public class ResidentService {
         Page<Resident> pageResident = this.residentRepository.findAll(spec, pageable);
         PaginatedResponse<Resident> page = new PaginatedResponse<>();
         page.setPageSize(pageable.getPageSize());
-        page.setCurPage(pageable.getPageNumber()+1);
+        page.setCurPage(pageable.getPageNumber());
         page.setTotalPages(pageResident.getTotalPages());
         page.setTotalElements(pageResident.getNumberOfElements());
         page.setResult(pageResident.getContent());
