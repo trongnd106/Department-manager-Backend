@@ -94,6 +94,14 @@ public class InvoiceService {
     }
 
     @Transactional
+    public InvoiceApartment updateInvoiceApartment(Long id) throws RuntimeException {
+        InvoiceApartment invoiceApartment = invoiceApartmentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Not found id " + id));
+        invoiceApartment.setPaymentStatus(PaymentEnum.Paid);
+        return invoiceApartmentRepository.save(invoiceApartment);
+    }
+
+    @Transactional
     public InvoiceResponse createInvoice(InvoiceRequest request) throws RuntimeException {
         //Check if the invoice exists or not
         if (invoiceRepository.findById(request.getInvoiceId()).isPresent()) {

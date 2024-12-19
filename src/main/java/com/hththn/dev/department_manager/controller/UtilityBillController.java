@@ -2,6 +2,7 @@ package com.hththn.dev.department_manager.controller;
 
 import com.hththn.dev.department_manager.dto.response.InvoiceResponse;
 import com.hththn.dev.department_manager.dto.response.PaginatedResponse;
+import com.hththn.dev.department_manager.entity.InvoiceApartment;
 import com.hththn.dev.department_manager.entity.Resident;
 import com.hththn.dev.department_manager.entity.UtilityBill;
 import com.hththn.dev.department_manager.service.UtilityBillService;
@@ -35,5 +36,10 @@ public class UtilityBillController {
     public ResponseEntity<?> getAllUtilityBills(@Filter Specification<UtilityBill> spec, Pageable pageable) {
         PaginatedResponse<UtilityBill> responses = this.utilityBillService.fetchUtilityBills(spec, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(responses);
+    }
+
+    @PostMapping("/update/{id}")
+    public ResponseEntity<UtilityBill> updateUtilityBill(@PathVariable("id") Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(utilityBillService.updateUtilityBill(id));
     }
 }

@@ -1,11 +1,14 @@
 package com.hththn.dev.department_manager.service;
 
+import com.hththn.dev.department_manager.constant.PaymentEnum;
 import com.hththn.dev.department_manager.dto.response.PaginatedResponse;
 import com.hththn.dev.department_manager.entity.Apartment;
 import com.hththn.dev.department_manager.entity.Fee;
+import com.hththn.dev.department_manager.entity.InvoiceApartment;
 import com.hththn.dev.department_manager.entity.UtilityBill;
 import com.hththn.dev.department_manager.repository.ApartmentRepository;
 import com.hththn.dev.department_manager.repository.UtilityBillRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -15,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
@@ -58,6 +62,7 @@ public class UtilityBillService {
                         .water(water)
                         .internet(internet)
                         .date(date)
+                        .paymentStatus(PaymentEnum.Unpaid)
                         .build();
 
                 utilityBills.add(utilityBill);
@@ -80,6 +85,14 @@ public class UtilityBillService {
         page.setTotalElements(pageUtilityBill.getNumberOfElements());
         page.setResult(pageUtilityBill.getContent());
         return page;
+    }
+
+    @Transactional
+    public UtilityBill updateUtilityBill (Long id) throws RuntimeException {
+        UtilityBill utilityBill = utilityBillRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Not found id " + id));
+        utilityBill.setPaymentStatus(PaymentEnum.Paid);
+        return utilityBillRepository.save(utilityBill);
     }
 
 }

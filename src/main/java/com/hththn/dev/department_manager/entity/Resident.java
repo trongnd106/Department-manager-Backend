@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.hththn.dev.department_manager.constant.GenderEnum;
 import com.hththn.dev.department_manager.constant.ResidentEnum;
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,6 +30,10 @@ public class Resident {
     String name;
 
     LocalDate dob;
+
+    GenderEnum gender;
+
+    String cic;
 
     @ManyToOne()
     @JoinColumn(name = "addressNumber")

@@ -2,6 +2,7 @@ package com.hththn.dev.department_manager.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.hththn.dev.department_manager.constant.PaymentEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -27,6 +28,7 @@ public class UtilityBill {
     double internet;
 
     String date;
+    PaymentEnum paymentStatus;
 
     @ManyToOne()
     @JsonIgnore

@@ -66,6 +66,8 @@ public class ResidentService {
                     .id(resident.getId())
                     .name(resident.getName())
                     .dob(resident.getDob())
+                    .gender(resident.getGender())
+                    .cic(resident.getCic())
                     .status(ResidentEnum.fromString(resident.getStatus()))
                     .build();
             // Luu 2 chieu de dong bo, nhung createdAt dang bi null
@@ -81,6 +83,8 @@ public class ResidentService {
                     .id(resident.getId())
                     .name(resident.getName())
                     .dob(resident.getDob())
+                    .gender(resident.getGender())
+                    .cic(resident.getCic())
                     .status(ResidentEnum.fromString(resident.getStatus()))
                     .apartment(null)
                     .build();
@@ -96,6 +100,12 @@ public class ResidentService {
             if (resident.getDob() != null) oldResident.setDob(resident.getDob());
             if (resident.getStatus() != null) {
                 oldResident.setStatus(ResidentEnum.fromString(resident.getStatus()));
+            }
+            if (resident.getGender() != null) {
+                oldResident.setGender(resident.getGender());
+            }
+            if (resident.getCic() != null) {
+                oldResident.setCic(resident.getCic());
             }
             if (resident.getAddressNumber() != null) {
                 Apartment newApartment = apartmentRepository.findById(resident.getAddressNumber())

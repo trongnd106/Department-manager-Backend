@@ -1,5 +1,6 @@
 package com.hththn.dev.department_manager.dto.request;
 
+import com.hththn.dev.department_manager.constant.GenderEnum;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,6 +15,8 @@ public class ResidentCreateRequest {
     Long id;
     String name;
     LocalDate dob;
+    GenderEnum gender;
+    String cic;
     String status;
     Long addressNumber;
 }
