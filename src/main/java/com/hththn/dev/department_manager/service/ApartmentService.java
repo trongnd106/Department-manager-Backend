@@ -72,15 +72,14 @@ public class ApartmentService {
         });
 
         // Fetch the apartment with updated relationships
-        return apartmentRepository.findById(saved.getAddressNumber())
-                .orElseThrow(() -> new RuntimeException("Failed to retrieve updated apartment"));
+        return saved;
     }
 
     public PaginatedResponse<Apartment> getAll(Specification<Apartment> spec, Pageable pageable){
         Page<Apartment> pageApartment = apartmentRepository.findAll(spec,pageable);
         return PaginatedResponse.<Apartment>builder()
                 .pageSize(pageable.getPageSize())
-                .curPage(pageable.getPageNumber()+1)
+                .curPage(pageable.getPageNumber())
                 .totalPages(pageApartment.getTotalPages())
                 .totalElements(pageApartment.getNumberOfElements())
                 .result(pageApartment.getContent())

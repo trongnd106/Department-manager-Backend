@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -31,9 +32,15 @@ public class ApartmentController {
         return ResponseEntity.status(HttpStatus.OK).body(apartment);
     }
 
-    @GetMapping()
-    public ResponseEntity<PaginatedResponse<Apartment>> getAll(@Filter Specification<Apartment> spec, Pageable pageable){
+    @GetMapping
+    public ResponseEntity<PaginatedResponse<Apartment>> getAll(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @Filter Specification<Apartment> spec) {
+
+        Pageable pageable = PageRequest.of(page - 1, size);
         PaginatedResponse<Apartment> result = apartmentService.getAll(spec, pageable);
+
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 

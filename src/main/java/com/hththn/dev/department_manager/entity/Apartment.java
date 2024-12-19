@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.hththn.dev.department_manager.constant.VehicleEnum;
+import org.checkerframework.common.aliasing.qual.Unique;
 
 @Entity
 @Table(name = "apartments")
@@ -24,7 +25,9 @@ import com.hththn.dev.department_manager.constant.VehicleEnum;
 @Builder
 public class Apartment {
     @Id
+    @Column(unique = true, nullable = false)
     Long addressNumber;
+
     double area;
 
     @Enumerated(EnumType.STRING)
