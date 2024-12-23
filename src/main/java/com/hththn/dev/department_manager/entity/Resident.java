@@ -41,21 +41,20 @@ public class Resident {
     Apartment apartment;
     @Enumerated(EnumType.STRING)
     ResidentEnum status;
+    int isActive;
     LocalDate statusDate;
-
-    Instant createdAt;
-
-    @PrePersist
-    public void beforeCreate() {
-        this.createdAt = Instant.now();
-        this.statusDate = LocalDate.now();
-    }
 
     @Transient  // field used to compare with status, not saved into database
     ResidentEnum previousStatus;
 
     @Transient
     Long apartmentId;
+
+    @PrePersist
+    public void beforePersist() {
+            isActive = 1;
+            statusDate = LocalDate.now();
+    }
 
     @PostLoad
     public void onLoad() {
@@ -69,6 +68,9 @@ public class Resident {
             this.statusDate = LocalDate.now();  // update statusDate
         }
         this.previousStatus = this.status;
+        if (this.isActive == 0) {
+            this.status = ResidentEnum.Moved; // soft delete
+        }
     }
 
 }

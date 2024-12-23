@@ -43,5 +43,7 @@ public class Fee {
         this.createdAt = LocalDate.now();
     }
     @PreUpdate
-    public void beforeUpdate() { this.updatedAt = LocalDate.now();}
+    public void beforeUpdate() {
+        this.updatedAt = LocalDate.now();
+    }
 }

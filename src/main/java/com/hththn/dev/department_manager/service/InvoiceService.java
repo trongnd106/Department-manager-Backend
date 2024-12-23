@@ -7,6 +7,7 @@ import com.hththn.dev.department_manager.dto.response.InvoiceApartmentResponse;
 import com.hththn.dev.department_manager.dto.response.InvoiceResponse;
 import com.hththn.dev.department_manager.dto.response.PaginatedResponse;
 import com.hththn.dev.department_manager.entity.*;
+import com.hththn.dev.department_manager.exception.UserInfoException;
 import com.hththn.dev.department_manager.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
@@ -73,7 +74,9 @@ public class InvoiceService {
     @Transactional
     public InvoiceResponse fetchInvoiceById(String id) throws RuntimeException {
         Invoice invoice = invoiceRepository.findById(id).orElseThrow(() -> new RuntimeException("Invoice with code = " + id + " is not found"));
-
+        if (invoice.getIsActive() == 0) {
+            throw new RuntimeException("Invoice with id " + id + " is not active");
+        }
         LocalDate localDate = invoice.getUpdatedAt().atZone(ZoneId.systemDefault()).toLocalDate();
         List<Fee> feeList = feeInvoiceRepository.findFeesByInvoiceId(id);
 
@@ -178,11 +181,15 @@ public class InvoiceService {
     }
 
     public ApiResponse<String> deleteInvoice(String id) throws RuntimeException {
-        Optional<Invoice> invoice = invoiceRepository.findById(id);
+        Invoice invoice = invoiceRepository.findById(id).orElseThrow(() -> new RuntimeException("Invoice with code = " + id + " is not found"));
         //Delete all record by invoiceId in fee_invoice table
         feeInvoiceRepository.deleteByInvoiceId(id);
         //Delete the invoice record in invoices table
         invoiceRepository.deleteById(id);
+        //Delete all record by invoiceId in invoice_apartment table
+        invoiceApartmentRepository.deleteByInvoiceId(id);
+        invoice.setIsActive(0);
+        invoiceRepository.save(invoice);
         ApiResponse<String> response = new ApiResponse<>();
         response.setCode(HttpStatus.OK.value());
         response.setMessage("delete invoice success");

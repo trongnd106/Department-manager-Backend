@@ -36,10 +36,12 @@ public class Invoice {
     @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)  //cascade: used for auto updating at fees and invoices table
     List<InvoiceApartment> invoiceApartments;
 
+    int isActive;
     Instant updatedAt;
 
     @PrePersist
     public void beforeCreate() {
+        this.isActive = 1;
         this.updatedAt = Instant.now();
     }
 

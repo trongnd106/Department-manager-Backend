@@ -20,5 +20,9 @@ public interface InvoiceApartmentRepository extends JpaRepository<InvoiceApartme
             "FROM InvoiceApartment ia WHERE ia.apartment.addressNumber = :apartmentId")
     List<InvoiceApartmentResponse> findInvoicesByApartmentId(@Param("apartmentId") Long apartmentId);
 
+    @Modifying //Required to be used in queries that change data such as UPDATE, DELETE (i.e. not a SELECT query.)
+    @Transactional
+    @Query("DELETE FROM InvoiceApartment ia WHERE ia.invoice.id = :invoiceId")
+    void deleteByInvoiceId(String invoiceId);
 }
 

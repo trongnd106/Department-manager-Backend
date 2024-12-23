@@ -33,6 +33,7 @@ import java.util.Optional;
 public class ResidentService {
     ResidentRepository residentRepository;
     ApartmentRepository apartmentRepository;
+    private final ApartmentService apartmentService;
 
     public PaginatedResponse<Resident> fetchAllResidents(Specification<Resident> spec, Pageable pageable) {
         Page<Resident> pageResident = this.residentRepository.findAll(spec, pageable);
@@ -70,7 +71,7 @@ public class ResidentService {
                     .cic(resident.getCic())
                     .status(ResidentEnum.fromString(resident.getStatus()))
                     .build();
-            // Luu 2 chieu de dong bo, nhung createdAt dang bi null
+            // Synchronize
             residentList.add(resident1);
             apartment.setResidentList(residentList);
             apartmentRepository.save(apartment);
@@ -125,7 +126,11 @@ public class ResidentService {
     @Transactional
     public ApiResponse<String> deleteResident(Long id) throws Exception {
         Resident resident = this.fetchResidentById(id);
-        this.residentRepository.delete(resident);
+        resident.setIsActive(0);
+        Apartment apartment = apartmentService.getDetail(resident.getApartmentId());
+        List<Resident> residentList = apartment.getResidentList();
+        residentList.remove(resident);
+        apartment.setResidentList(residentList);
         ApiResponse<String> response = new ApiResponse<>();
         response.setCode(HttpStatus.OK.value());
         response.setMessage("delete resident success");
