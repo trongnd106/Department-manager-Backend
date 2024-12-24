@@ -33,7 +33,6 @@ import java.util.Optional;
 public class ResidentService {
     ResidentRepository residentRepository;
     ApartmentRepository apartmentRepository;
-    private final ApartmentService apartmentService;
 
     public PaginatedResponse<Resident> fetchAllResidents(Specification<Resident> spec, Pageable pageable) {
         Page<Resident> pageResident = this.residentRepository.findAll(spec, pageable);
@@ -127,7 +126,7 @@ public class ResidentService {
     public ApiResponse<String> deleteResident(Long id) throws Exception {
         Resident resident = this.fetchResidentById(id);
         resident.setIsActive(0);
-        Apartment apartment = apartmentService.getDetail(resident.getApartmentId());
+        Apartment apartment = apartmentRepository.findById(resident.getApartmentId()).orElseThrow(() -> new RuntimeException("Apartment with id " + resident.getApartmentId() + " not found"));
         List<Resident> residentList = apartment.getResidentList();
         residentList.remove(resident);
         apartment.setResidentList(residentList);
