@@ -1,11 +1,9 @@
 package com.hththn.dev.department_manager.service;
 
+import com.hththn.dev.department_manager.constant.FeeTypeEnum;
 import com.hththn.dev.department_manager.constant.PaymentEnum;
 import com.hththn.dev.department_manager.dto.request.InvoiceRequest;
-import com.hththn.dev.department_manager.dto.response.ApiResponse;
-import com.hththn.dev.department_manager.dto.response.InvoiceApartmentResponse;
-import com.hththn.dev.department_manager.dto.response.InvoiceResponse;
-import com.hththn.dev.department_manager.dto.response.PaginatedResponse;
+import com.hththn.dev.department_manager.dto.response.*;
 import com.hththn.dev.department_manager.entity.*;
 import com.hththn.dev.department_manager.exception.UserInfoException;
 import com.hththn.dev.department_manager.repository.*;
@@ -59,6 +57,7 @@ public class InvoiceService {
 
                             // Create InvoiceResponse
                             return new InvoiceResponse(
+                                    invoice.getIsActive(),
                                     invoice.getId(),
                                     invoice.getName(),
                                     invoice.getDescription(),
@@ -82,6 +81,7 @@ public class InvoiceService {
 
         return InvoiceResponse.builder()
                 .id(invoice.getId())
+                .isActive(invoice.getIsActive())
                 .name(invoice.getName())
                 .description(invoice.getDescription())
                 .lastUpdated(localDate)
@@ -93,7 +93,24 @@ public class InvoiceService {
     public List<InvoiceApartmentResponse> fetchAllInvoicesByApartmentId(Long id) throws RuntimeException {
         Apartment apartment = apartmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Not found apartment " + id));
-        return invoiceApartmentRepository.findInvoicesByApartmentId(id);
+        List<InvoiceApartmentResponse> invoiceApartmentResponseList = invoiceApartmentRepository.findInvoicesByApartmentId(id);
+        invoiceApartmentResponseList.forEach(response -> {
+            // Fetch fees by invoice ID
+            List<Fee> feeList = feeInvoiceRepository.findFeesByInvoiceId(response.getId());
+
+            // Map fees to FeeResponse and calculate amount
+            List<FeeResponse> feeResponses = feeList.stream()
+                    .map(fee -> new FeeResponse(
+                            fee.getName(),
+                            Double.parseDouble(String.valueOf(fee.getUnitPrice())) * ((fee.getFeeTypeEnum() == FeeTypeEnum.DepartmentFee)? apartment.getArea() : apartment.getNumberOfCars()+apartment.getNumberOfMotorbikes()) // Calculate amount
+                    ))
+                    .toList();
+
+            // Set the feeResponses to the response (Assuming there's a setter for fees)
+            response.setFeeList(feeResponses);
+        });
+
+        return invoiceApartmentResponseList;
     }
 
     @Transactional
@@ -106,12 +123,14 @@ public class InvoiceService {
 
     @Transactional
     public InvoiceResponse createInvoice(InvoiceRequest request) throws RuntimeException {
+        Invoice invoice = new Invoice();
         //Check if the invoice exists or not
         if (invoiceRepository.findById(request.getInvoiceId()).isPresent()) {
-            throw new RuntimeException("Invoice with id = " + request.getInvoiceId() + " already exists");
+            Invoice response = invoiceRepository.findById(request.getInvoiceId()).get();
+            if(response.getIsActive()==1) throw new RuntimeException("Invoice with id = " + request.getInvoiceId() + " is already actived");
+            else invoice.setIsActive(1);
         }
         // If it does not exist, create a new Invoice
-        Invoice invoice = new Invoice();
         invoice.setId(request.getInvoiceId());
         invoice.setName(request.getName());
         invoice.setDescription(request.getDescription());
@@ -138,6 +157,7 @@ public class InvoiceService {
         }
 
         return InvoiceResponse.builder()
+                .isActive(invoice.getIsActive())
                 .id(invoice.getId())
                 .name(invoice.getName())
                 .description(invoice.getDescription())
@@ -184,8 +204,6 @@ public class InvoiceService {
         Invoice invoice = invoiceRepository.findById(id).orElseThrow(() -> new RuntimeException("Invoice with code = " + id + " is not found"));
         //Delete all record by invoiceId in fee_invoice table
         feeInvoiceRepository.deleteByInvoiceId(id);
-        //Delete the invoice record in invoices table
-        invoiceRepository.deleteById(id);
         //Delete all record by invoiceId in invoice_apartment table
         invoiceApartmentRepository.deleteByInvoiceId(id);
         invoice.setIsActive(0);

@@ -14,6 +14,7 @@ import java.util.List;
 @Builder
 @FieldDefaults(level= AccessLevel.PRIVATE)
 public class InvoiceResponse {
+    int isActive;
     String id;
     String name;
     String description;
