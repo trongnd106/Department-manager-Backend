@@ -87,6 +87,10 @@ public class UtilityBillService {
         return page;
     }
 
+    public List<UtilityBill> fetchUtilityBillsByApartmentId(Long id) {
+        return utilityBillRepository.findByApartmentId(id);
+    }
+
     @Transactional
     public UtilityBill updateUtilityBill (Long id) throws RuntimeException {
         UtilityBill utilityBill = utilityBillRepository.findById(id)

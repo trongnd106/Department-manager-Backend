@@ -42,6 +42,11 @@ public class UtilityBillController {
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<List<UtilityBill>> getUtilityBillByApartmentId(@PathVariable("id") Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(utilityBillService.fetchUtilityBillsByApartmentId(id));
+    }
+
     @PostMapping("/update/{id}")
     public ResponseEntity<UtilityBill> updateUtilityBill(@PathVariable("id") Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(utilityBillService.updateUtilityBill(id));
