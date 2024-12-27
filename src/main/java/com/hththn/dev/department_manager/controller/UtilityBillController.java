@@ -28,8 +28,8 @@ import java.util.List;
 public class UtilityBillController {
     UtilityBillService utilityBillService;
     @PostMapping("/import")
-    public ResponseEntity<?> importUtilityBills(@RequestParam("file") MultipartFile file, @RequestParam("date") String date) {
-        List<UtilityBill> utilityBills = utilityBillService.importExcel(file,date);
+    public ResponseEntity<?> importUtilityBills(@RequestParam("file") MultipartFile file, @RequestParam("name") String name) {
+        List<UtilityBill> utilityBills = utilityBillService.importExcel(file,name);
         return ResponseEntity.ok(utilityBills);
     }
 

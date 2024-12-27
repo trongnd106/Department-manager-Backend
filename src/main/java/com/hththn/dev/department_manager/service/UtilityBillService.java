@@ -32,7 +32,7 @@ public class UtilityBillService {
     UtilityBillRepository utilityBillRepository;
     ApartmentRepository apartmentRepository;
 
-    public List<UtilityBill> importExcel(MultipartFile file, String date) {
+    public List<UtilityBill> importExcel(MultipartFile file, String name) {
         List<UtilityBill> utilityBills = new ArrayList<>();
         try (InputStream inputStream = file.getInputStream()) {
             Workbook workbook = WorkbookFactory.create(inputStream);
@@ -61,7 +61,7 @@ public class UtilityBillService {
                         .electricity(electricity)
                         .water(water)
                         .internet(internet)
-                        .date(date)
+                        .name(name)
                         .paymentStatus(PaymentEnum.Unpaid)
                         .build();
 

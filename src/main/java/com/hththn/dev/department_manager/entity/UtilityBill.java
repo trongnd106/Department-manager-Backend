@@ -27,7 +27,7 @@ public class UtilityBill {
     double water;
     double internet;
 
-    String date;
+    String name;
     PaymentEnum paymentStatus;
 
     @ManyToOne()
