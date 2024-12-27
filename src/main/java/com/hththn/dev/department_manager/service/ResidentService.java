@@ -126,10 +126,12 @@ public class ResidentService {
     public ApiResponse<String> deleteResident(Long id) throws Exception {
         Resident resident = this.fetchResidentById(id);
         resident.setIsActive(0);
-        Apartment apartment = apartmentRepository.findById(resident.getApartmentId()).orElseThrow(() -> new RuntimeException("Apartment with id " + resident.getApartmentId() + " not found"));
-        List<Resident> residentList = apartment.getResidentList();
-        residentList.remove(resident);
-        apartment.setResidentList(residentList);
+        if (resident.getApartment() != null) {
+            Apartment apartment = apartmentRepository.findById(resident.getApartmentId()).orElseThrow(() -> new RuntimeException("Apartment with id " + resident.getApartmentId() + " not found"));
+            List<Resident> residentList = apartment.getResidentList();
+            residentList.remove(resident);
+            apartment.setResidentList(residentList);
+        }
         ApiResponse<String> response = new ApiResponse<>();
         response.setCode(HttpStatus.OK.value());
         response.setMessage("delete resident success");
