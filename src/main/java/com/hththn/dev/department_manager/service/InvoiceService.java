@@ -119,7 +119,7 @@ public class InvoiceService {
                         }
 
                         // Create FeeResponse
-                        return new FeeResponse(fee.getName(), fee.getFeeTypeEnum(), amount);
+                        return new FeeResponse(fee.getName(), fee.getId(), fee.getFeeTypeEnum(), amount);
                     })
                     .toList();
 

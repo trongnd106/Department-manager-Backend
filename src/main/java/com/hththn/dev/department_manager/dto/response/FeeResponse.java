@@ -12,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level= AccessLevel.PRIVATE)
 public class FeeResponse {
     String name;
+    Long id;
     FeeTypeEnum feeType;
     double amount;
 }
