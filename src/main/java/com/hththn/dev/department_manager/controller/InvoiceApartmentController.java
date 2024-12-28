@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/invoiceapartment")
@@ -29,5 +30,10 @@ public class InvoiceApartmentController {
     @PostMapping("/update/{id}")
     public ResponseEntity<InvoiceApartment> updateInvoice(@PathVariable("id") Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(invoiceService.updateInvoiceApartment(id));
+    }
+
+    @PutMapping("/update/{apartmentId}/{invoiceId}")
+    public ResponseEntity<List<InvoiceApartmentResponse>> updateInvoiceApartment(@PathVariable("apartmentId") Long apartmentId, @PathVariable("invoiceId") String invoiceId, @RequestBody Map<Long, Double> feeAmounts) {
+        return ResponseEntity.status(HttpStatus.OK).body(invoiceService.updateContributionFund(apartmentId, invoiceId, feeAmounts));
     }
 }

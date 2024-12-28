@@ -8,12 +8,14 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Map;
+
 @Entity
 @Table(name = "invoice_apartment")
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class InvoiceApartment {
+public class  InvoiceApartment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,6 +29,13 @@ public class InvoiceApartment {
     Apartment apartment;
 
     PaymentEnum paymentStatus;
+
+    @ElementCollection
+    @CollectionTable(name = "invoice_apartment_fees",
+            joinColumns = @JoinColumn(name = "invoice_apartment_id"))
+    @MapKeyColumn(name = "fee_id")
+    @Column(name = "amount")
+    Map<Long, Double> feeAmounts; // Key: Fee ID, Value: Amount
 
 
 }

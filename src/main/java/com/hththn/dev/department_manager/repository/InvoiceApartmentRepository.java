@@ -24,5 +24,7 @@ public interface InvoiceApartmentRepository extends JpaRepository<InvoiceApartme
     @Transactional
     @Query("DELETE FROM InvoiceApartment ia WHERE ia.invoice.id = :invoiceId")
     void deleteByInvoiceId(String invoiceId);
+
+    InvoiceApartment findByInvoiceIdAndApartmentAddressNumber(String invoice_id, Long apartment_addressNumber);
 }
 

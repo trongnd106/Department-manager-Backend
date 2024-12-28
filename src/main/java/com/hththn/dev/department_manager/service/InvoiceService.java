@@ -18,9 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -95,22 +93,55 @@ public class InvoiceService {
                 .orElseThrow(() -> new EntityNotFoundException("Not found apartment " + id));
         List<InvoiceApartmentResponse> invoiceApartmentResponseList = invoiceApartmentRepository.findInvoicesByApartmentId(id);
         invoiceApartmentResponseList.forEach(response -> {
+            InvoiceApartment invoiceApartment = invoiceApartmentRepository.findByInvoiceIdAndApartmentAddressNumber(response.getId(),id);
             // Fetch fees by invoice ID
             List<Fee> feeList = feeInvoiceRepository.findFeesByInvoiceId(response.getId());
 
             // Map fees to FeeResponse and calculate amount
             List<FeeResponse> feeResponses = feeList.stream()
-                    .map(fee -> new FeeResponse(
-                            fee.getName(),
-                            Double.parseDouble(String.valueOf(fee.getUnitPrice())) * ((fee.getFeeTypeEnum() == FeeTypeEnum.DepartmentFee)? apartment.getArea() : apartment.getNumberOfCars()+apartment.getNumberOfMotorbikes()) // Calculate amount
-                    ))
+                    .map(fee -> {
+                        double amount;
+
+                        // Process the amount based on the fee type
+                        if (fee.getFeeTypeEnum() == FeeTypeEnum.DepartmentFee) {
+                            // Apartment fee: calculated based on the apartment area
+                            amount = fee.getUnitPrice().doubleValue() * apartment.getArea();
+                        } else if (fee.getFeeTypeEnum() == FeeTypeEnum.VehicleFee) {
+                            // Vehicle fee: calculated based on the number of cars and motorbikes
+                            long totalVehicles = apartment.getNumberOfCars() + apartment.getNumberOfMotorbikes();
+                            amount = fee.getUnitPrice().doubleValue() * totalVehicles;
+                        } else if (fee.getFeeTypeEnum() == FeeTypeEnum.ContributionFund) {
+                            // Contribution fee: retrieved from `feeAmount` stored in InvoiceApartment
+                            amount = invoiceApartment.getFeeAmounts().getOrDefault(fee.getId(), 0.0); // feeAmountMap contains {feeId -> amount}
+                        } else {
+                            // Default: amount is 0
+                            amount = 0.0;
+                        }
+
+                        // Create FeeResponse
+                        return new FeeResponse(fee.getName(), fee.getFeeTypeEnum(), amount);
+                    })
                     .toList();
+
 
             // Set the feeResponses to the response (Assuming there's a setter for fees)
             response.setFeeList(feeResponses);
         });
 
         return invoiceApartmentResponseList;
+    }
+
+    @Transactional
+    public List<InvoiceApartmentResponse> updateContributionFund(Long apartmentId, String invoiceId, Map<Long, Double> feeAmounts) throws RuntimeException {
+        InvoiceApartment invoiceApartment = invoiceApartmentRepository.findByInvoiceIdAndApartmentAddressNumber(invoiceId, apartmentId);
+        // Update the feeAmountMap field
+        if (invoiceApartment.getFeeAmounts() == null) {
+            invoiceApartment.setFeeAmounts(new HashMap<>());
+        }
+        invoiceApartment.getFeeAmounts().putAll(feeAmounts);
+        // Save the updated entity
+        invoiceApartmentRepository.save(invoiceApartment);
+        return fetchAllInvoicesByApartmentId(apartmentId);
     }
 
     @Transactional
@@ -192,6 +223,7 @@ public class InvoiceService {
         List<Fee> feeListAfterUpdate = feeInvoiceRepository.findFeesByInvoiceId(invoice.getId());
 
         return InvoiceResponse.builder()
+                .isActive(invoice.getIsActive())
                 .id(invoice.getId())
                 .name(invoice.getName())
                 .description(invoice.getDescription())

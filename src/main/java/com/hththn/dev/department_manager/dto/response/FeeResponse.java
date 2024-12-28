@@ -1,5 +1,6 @@
 package com.hththn.dev.department_manager.dto.response;
 
+import com.hththn.dev.department_manager.constant.FeeTypeEnum;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,6 +11,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level= AccessLevel.PRIVATE)
 public class FeeResponse {
-    String id;
+    String name;
+    FeeTypeEnum feeType;
     double amount;
 }
