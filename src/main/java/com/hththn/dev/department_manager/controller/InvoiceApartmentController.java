@@ -3,6 +3,7 @@ package com.hththn.dev.department_manager.controller;
 import com.hththn.dev.department_manager.dto.response.InvoiceApartmentResponse;
 import com.hththn.dev.department_manager.entity.Invoice;
 import com.hththn.dev.department_manager.entity.InvoiceApartment;
+import com.hththn.dev.department_manager.repository.InvoiceApartmentRepository;
 import com.hththn.dev.department_manager.service.InvoiceService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:5173")
 public class InvoiceApartmentController {
     InvoiceService invoiceService;
+    private final InvoiceApartmentRepository invoiceApartmentRepository;
 
     @GetMapping("/{id}")
     public ResponseEntity<List<InvoiceApartmentResponse>> getAllInvoicesByApartmentId(@PathVariable("id") Long apartmentId) {
@@ -34,6 +36,8 @@ public class InvoiceApartmentController {
 
     @PutMapping("/update/{apartmentId}/{invoiceId}")
     public ResponseEntity<List<InvoiceApartmentResponse>> updateInvoiceApartment(@PathVariable("apartmentId") Long apartmentId, @PathVariable("invoiceId") String invoiceId, @RequestBody Map<Long, Double> feeAmounts) {
+        InvoiceApartment invoiceApartment = invoiceApartmentRepository.findByInvoiceIdAndApartmentAddressNumber(invoiceId, apartmentId);
+        invoiceService.updateInvoiceApartment(invoiceApartment.getId());
         return ResponseEntity.status(HttpStatus.OK).body(invoiceService.updateContributionFund(apartmentId, invoiceId, feeAmounts));
     }
 }
