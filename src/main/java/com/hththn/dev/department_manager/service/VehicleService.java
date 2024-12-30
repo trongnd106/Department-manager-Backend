@@ -50,10 +50,13 @@ public class VehicleService {
         if (this.vehicleRepository.findById(vehicleRequest.getId()).isPresent()) {
             throw new RuntimeException("Vehicle with id = " + vehicleRequest.getId()+ " already exists");
         }
+        if (vehicleRequest.getId() == null){
+            throw new RuntimeException("Vehicle id is null");
+        }
         Vehicle vehicle = new Vehicle();
         vehicle.setId(vehicleRequest.getId());
         vehicle.setCategory(vehicleRequest.getCategory());
-        vehicle.setApartment(this.apartmentRepository.findById(vehicleRequest.getApartmentId()).orElse(null));
+        vehicle.setApartment(this.apartmentRepository.findById(vehicleRequest.getApartmentId()).orElseThrow(() -> new RuntimeException("Apartment with id " + vehicleRequest.getApartmentId() + " does not exist")));
         return this.vehicleRepository.save(vehicle);
     }
 
