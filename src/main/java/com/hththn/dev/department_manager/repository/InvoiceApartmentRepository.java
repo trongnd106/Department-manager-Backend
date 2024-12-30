@@ -16,7 +16,7 @@ import java.util.List;
 
 @Repository
 public interface InvoiceApartmentRepository extends JpaRepository<InvoiceApartment, Long>, JpaSpecificationExecutor<InvoiceApartment> {
-    @Query("SELECT new com.hththn.dev.department_manager.dto.response.InvoiceApartmentResponse(ia.invoice.id, ia.invoice.name, ia.invoice.description, ia.invoice.updatedAt, ia.paymentStatus, null) " +
+    @Query("SELECT new com.hththn.dev.department_manager.dto.response.InvoiceApartmentResponse(ia.invoice.id, ia.invoice.name, ia.invoice.description, ia.invoice.updatedAt, ia.invoice.createdAt, ia.paymentStatus, null) " +
             "FROM InvoiceApartment ia WHERE ia.apartment.addressNumber = :apartmentId")
     List<InvoiceApartmentResponse> findInvoicesByApartmentId(@Param("apartmentId") Long apartmentId);
 

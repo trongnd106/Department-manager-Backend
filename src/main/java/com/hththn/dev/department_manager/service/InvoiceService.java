@@ -87,7 +87,6 @@ public class InvoiceService {
                 .build();
     }
 
-    @Transactional
     public List<InvoiceApartmentResponse> fetchAllInvoicesByApartmentId(Long id) throws RuntimeException {
         Apartment apartment = apartmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Not found apartment " + id));
@@ -108,7 +107,7 @@ public class InvoiceService {
                             amount = fee.getUnitPrice().doubleValue() * apartment.getArea();
                         } else if (fee.getFeeTypeEnum() == FeeTypeEnum.VehicleFee) {
                             // Vehicle fee: calculated based on the number of cars and motorbikes
-                            long totalVehicles = apartment.getNumberOfCars() + apartment.getNumberOfMotorbikes();
+                            long totalVehicles = 3*apartment.getNumberOfCars() + apartment.getNumberOfMotorbikes();
                             amount = fee.getUnitPrice().doubleValue() * totalVehicles;
                         } else if (fee.getFeeTypeEnum() == FeeTypeEnum.ContributionFund) {
                             // Contribution fee: retrieved from `feeAmount` stored in InvoiceApartment
@@ -196,6 +195,48 @@ public class InvoiceService {
                 .feeList(feeListAfterCreate)
                 .build();
     }
+
+    public List<TotalInvoiceResponse> getAllTotalInvoices() {
+        // Map to store TotalInvoiceResponse by invoiceId
+        Map<String, TotalInvoiceResponse> totalInvoiceMap = new HashMap<>();
+
+        // Fetch all apartments
+        List<Apartment> apartmentList = apartmentRepository.findAll();
+
+        for (Apartment apartment : apartmentList) {
+            // Fetch all invoices for the apartment
+            List<InvoiceApartmentResponse> invoiceList = this.fetchAllInvoicesByApartmentId(apartment.getAddressNumber());
+
+            for (InvoiceApartmentResponse invoiceResponse : invoiceList) {
+                String invoiceId = invoiceResponse.getId(); // Assuming the response has getId()
+                double amountToAdd = invoiceResponse.getFeeList().stream().mapToDouble(FeeResponse::getAmount).sum(); // Assuming the response has getTotalAmount()
+                double amountPaid = (invoiceResponse.getPaymentStatus() == PaymentEnum.Paid) ? 0 : amountToAdd;
+                double amountContribution = invoiceResponse.getFeeList().stream().filter(feeResponse -> feeResponse.getFeeType() == FeeTypeEnum.ContributionFund).mapToDouble(FeeResponse::getAmount).sum();
+                // Check if the invoiceId is already in the map
+                if (totalInvoiceMap.containsKey(invoiceId)) {
+                    // Update the totalAmount for the existing entry
+                    TotalInvoiceResponse existingResponse = totalInvoiceMap.get(invoiceId);
+                    existingResponse.setTotalAmount(existingResponse.getTotalAmount() + amountToAdd);
+                    existingResponse.setPaidAmount(existingResponse.getPaidAmount() + amountPaid);
+                    existingResponse.setContributionAmount(existingResponse.getContributionAmount() + amountContribution);
+                } else {
+                    // Create a new TotalInvoiceResponse and add it to the map
+                    TotalInvoiceResponse newResponse = new TotalInvoiceResponse();
+                    newResponse.setId(invoiceId);
+                    newResponse.setName(invoiceResponse.getName());
+                    newResponse.setCreateDate(invoiceResponse.getCreatedAt());
+                    newResponse.setTotalAmount(amountToAdd);
+                    newResponse.setPaidAmount(amountPaid);
+                    newResponse.setContributionAmount(amountContribution);
+                    totalInvoiceMap.put(invoiceId, newResponse);
+                }
+            }
+        }
+
+        // Return the values of the map as a list
+        return new ArrayList<>(totalInvoiceMap.values());
+    }
+
 
     public InvoiceResponse updateInvoice (InvoiceRequest request) throws RuntimeException {
         // Fetch invoice by ID

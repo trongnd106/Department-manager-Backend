@@ -4,6 +4,7 @@ import com.hththn.dev.department_manager.dto.request.InvoiceRequest;
 import com.hththn.dev.department_manager.dto.response.ApiResponse;
 import com.hththn.dev.department_manager.dto.response.InvoiceResponse;
 import com.hththn.dev.department_manager.dto.response.PaginatedResponse;
+import com.hththn.dev.department_manager.dto.response.TotalInvoiceResponse;
 import com.hththn.dev.department_manager.entity.Invoice;
 import com.hththn.dev.department_manager.service.InvoiceService;
 import com.turkraft.springfilter.boot.Filter;
@@ -15,6 +16,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -38,6 +41,12 @@ public class InvoiceController {
     public ResponseEntity<InvoiceResponse> getInvoiceById(@PathVariable String id) throws Exception {
         InvoiceResponse invoice = this.invoiceService.fetchInvoiceById(id);
         return ResponseEntity.status(HttpStatus.OK).body(invoice);
+    }
+
+    //summary
+    @GetMapping("/total")
+    public ResponseEntity<List<TotalInvoiceResponse>> getInvoiceTotal(){
+        return ResponseEntity.status(HttpStatus.OK).body(invoiceService.getAllTotalInvoices());
     }
 
     @PostMapping

@@ -38,11 +38,13 @@ public class Invoice {
 
     int isActive;
     Instant updatedAt;
+    LocalDate createdAt;
 
     @PrePersist
     public void beforeCreate() {
         this.isActive = 1;
         this.updatedAt = Instant.now();
+        this.createdAt = LocalDate.now();
     }
 
     @PreUpdate

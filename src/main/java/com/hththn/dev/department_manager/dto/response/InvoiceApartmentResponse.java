@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -19,6 +20,7 @@ public class InvoiceApartmentResponse {
     String name;
     String description;
     Instant updatedAt;
+    LocalDate createdAt;
     PaymentEnum paymentStatus;
     List<FeeResponse> feeList;
 }
