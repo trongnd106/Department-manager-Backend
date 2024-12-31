@@ -210,7 +210,7 @@ public class InvoiceService {
             for (InvoiceApartmentResponse invoiceResponse : invoiceList) {
                 String invoiceId = invoiceResponse.getId(); // Assuming the response has getId()
                 double amountToAdd = invoiceResponse.getFeeList().stream().mapToDouble(FeeResponse::getAmount).sum(); // Assuming the response has getTotalAmount()
-                double amountPaid = (invoiceResponse.getPaymentStatus() == PaymentEnum.Paid) ? 0 : amountToAdd;
+                double amountPaid = (invoiceResponse.getPaymentStatus() == PaymentEnum.Unpaid) ? 0 : amountToAdd;
                 double amountContribution = invoiceResponse.getFeeList().stream().filter(feeResponse -> feeResponse.getFeeType() == FeeTypeEnum.ContributionFund).mapToDouble(FeeResponse::getAmount).sum();
                 // Check if the invoiceId is already in the map
                 if (totalInvoiceMap.containsKey(invoiceId)) {
