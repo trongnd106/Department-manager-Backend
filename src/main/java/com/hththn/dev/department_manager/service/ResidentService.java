@@ -35,6 +35,24 @@ public class ResidentService {
     ApartmentRepository apartmentRepository;
 
     public PaginatedResponse<Resident> fetchAllResidents(Specification<Resident> spec, Pageable pageable) {
+        //Page<Resident> pageResident = this.residentRepository.findAll(spec, pageable);
+        Specification<Resident> notMovedSpec = (root, query, criteriaBuilder) ->
+                criteriaBuilder.notEqual(root.get("status"), ResidentEnum.Moved);
+
+        Specification<Resident> combinedSpec = spec == null ? notMovedSpec : spec.and(notMovedSpec);
+
+        Page<Resident> pageResident = this.residentRepository.findAll(combinedSpec, pageable);
+
+        PaginatedResponse<Resident> page = new PaginatedResponse<>();
+        page.setPageSize(pageable.getPageSize());
+        page.setCurPage(pageable.getPageNumber());
+        page.setTotalPages(pageResident.getTotalPages());
+        page.setTotalElements(pageResident.getNumberOfElements());
+        page.setResult(pageResident.getContent());
+        return page;
+    }
+
+    public PaginatedResponse<Resident> fetchAllLivingResidents(Specification<Resident> spec, Pageable pageable) {
         Page<Resident> pageResident = this.residentRepository.findAll(spec, pageable);
         PaginatedResponse<Resident> page = new PaginatedResponse<>();
         page.setPageSize(pageable.getPageSize());
