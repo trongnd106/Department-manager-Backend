@@ -3,6 +3,8 @@
 ## Introdution
 Here is the backend source code for the Bluemoon apartment fee management software.
 
+API Design: https://docs.google.com/spreadsheets/d/1-VWnJ0egj7uWib9meoAm_yRT35s7QjjlMHfRe_51vjo/edit?usp=sharing
+
 Frontend project link: https://github.com/tmtuan04/department-manager-frontend
 
 Detailed project report link: https://nlink.at/PG4P
