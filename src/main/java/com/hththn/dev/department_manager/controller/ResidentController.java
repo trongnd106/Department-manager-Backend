@@ -34,6 +34,15 @@ public class ResidentController {
         return ResponseEntity.status(HttpStatus.OK).body(residentResponses);
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<PaginatedResponse<Resident>> getAll(@Filter Specification<Resident> spec,
+                                                                       @RequestParam(value = "page", defaultValue = "1") int page,
+                                                                       @RequestParam(value = "size", defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        PaginatedResponse<Resident> residentResponses = this.residentService.fetchAll(spec, pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(residentResponses);
+    }
+
     //fetch resident by id
     @GetMapping("/{id}")
     public ResponseEntity<Resident> getResidentById(@PathVariable("id") long id) throws Exception {

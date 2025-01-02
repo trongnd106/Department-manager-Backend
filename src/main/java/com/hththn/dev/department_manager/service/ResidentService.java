@@ -52,7 +52,7 @@ public class ResidentService {
         return page;
     }
 
-    public PaginatedResponse<Resident> fetchAllLivingResidents(Specification<Resident> spec, Pageable pageable) {
+    public PaginatedResponse<Resident> fetchAll(Specification<Resident> spec, Pageable pageable) {
         Page<Resident> pageResident = this.residentRepository.findAll(spec, pageable);
         PaginatedResponse<Resident> page = new PaginatedResponse<>();
         page.setPageSize(pageable.getPageSize());
@@ -93,6 +93,7 @@ public class ResidentService {
             apartment.setResidentList(residentList);
             apartmentRepository.save(apartment);
             resident1.setApartment(apartment);
+            resident1.setIsActive(1);
 
             return this.residentRepository.save(resident1);
         }
@@ -150,6 +151,7 @@ public class ResidentService {
             residentList.remove(resident);
             apartment.setResidentList(residentList);
         }
+        resident.setApartment(null);
         ApiResponse<String> response = new ApiResponse<>();
         response.setCode(HttpStatus.OK.value());
         response.setMessage("delete resident success");
