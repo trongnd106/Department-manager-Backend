@@ -35,6 +35,24 @@ public class ResidentService {
     ApartmentRepository apartmentRepository;
 
     public PaginatedResponse<Resident> fetchAllResidents(Specification<Resident> spec, Pageable pageable) {
+        //Page<Resident> pageResident = this.residentRepository.findAll(spec, pageable);
+        Specification<Resident> notMovedSpec = (root, query, criteriaBuilder) ->
+                criteriaBuilder.notEqual(root.get("status"), ResidentEnum.Moved);
+
+        Specification<Resident> combinedSpec = spec == null ? notMovedSpec : spec.and(notMovedSpec);
+
+        Page<Resident> pageResident = this.residentRepository.findAll(combinedSpec, pageable);
+
+        PaginatedResponse<Resident> page = new PaginatedResponse<>();
+        page.setPageSize(pageable.getPageSize());
+        page.setCurPage(pageable.getPageNumber());
+        page.setTotalPages(pageResident.getTotalPages());
+        page.setTotalElements(pageResident.getNumberOfElements());
+        page.setResult(pageResident.getContent());
+        return page;
+    }
+
+    public PaginatedResponse<Resident> fetchAll(Specification<Resident> spec, Pageable pageable) {
         Page<Resident> pageResident = this.residentRepository.findAll(spec, pageable);
         PaginatedResponse<Resident> page = new PaginatedResponse<>();
         page.setPageSize(pageable.getPageSize());
@@ -75,6 +93,7 @@ public class ResidentService {
             apartment.setResidentList(residentList);
             apartmentRepository.save(apartment);
             resident1.setApartment(apartment);
+            resident1.setIsActive(1);
 
             return this.residentRepository.save(resident1);
         }
@@ -132,6 +151,7 @@ public class ResidentService {
             residentList.remove(resident);
             apartment.setResidentList(residentList);
         }
+        resident.setApartment(null);
         ApiResponse<String> response = new ApiResponse<>();
         response.setCode(HttpStatus.OK.value());
         response.setMessage("delete resident success");

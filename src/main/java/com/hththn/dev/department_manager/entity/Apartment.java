@@ -3,6 +3,7 @@ package com.hththn.dev.department_manager.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.hththn.dev.department_manager.constant.ApartmentEnum;
+import com.hththn.dev.department_manager.constant.ResidentEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -70,7 +71,9 @@ public class Apartment {
     }
     @PostLoad
     public void onLoad() {
-        numberOfMembers = residentList.size();
+        numberOfMembers = (int) residentList.stream()
+                .filter(resident -> resident.getStatus() != ResidentEnum.Moved)
+                .count();
         vehicleList = Optional.ofNullable(vehicleList).orElse(Collections.emptyList());
         numberOfMotorbikes = vehicleList.stream()
                 .filter(vehicle -> vehicle.getCategory() == VehicleEnum.Motorbike)
