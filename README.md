@@ -1,6 +1,6 @@
 # Department Manager Backend
 
-## Introdution
+## Introduction
 Here is the backend source code for the Bluemoon apartment fee management software.
 
 API Design: https://docs.google.com/spreadsheets/d/1-VWnJ0egj7uWib9meoAm_yRT35s7QjjlMHfRe_51vjo/edit?usp=sharing
@@ -26,7 +26,7 @@ Maven: ≥ 3.6.0
 If running via Docker container: Simply install Docker.
 
 ### Detailed Installation Steps
-*Option 1: Run Directly on the Machine*
+#### Option 1: Run Directly on the Machine*
 
 Step 1: Run the Frontend
 
@@ -50,9 +50,9 @@ Step 3: Run the Project
 
 Open any web browser and navigate to localhost:5173 to run the program.
 
-*Option 2: Use Docker*
+#### Option 2: Use Docker*
 
-Create the image using the repository link:
+Create the image by using the repository link:
 https://github.com/trongnd106/Bluemoon-department
 
 Step 1: Build the project code
