@@ -53,7 +53,7 @@ Open any web browser and navigate to localhost:5173 to run the program.
 #### Option 2: Use Docker*
 
 Create the image by using the repository link:
-https://github.com/trongnd106/Bluemoon-department
+https://github.com/trongnd106/Bluemoon-deparment
 
 Step 1: Build the project code
 
