@@ -1,13 +1,13 @@
 # Department Manager Backend
 
 ## Introduction
-Here is the backend source code for the Bluemoon apartment fee management software.
+The backend source code for the Bluemoon apartment fee management system.
 
 API Design: https://docs.google.com/spreadsheets/d/1-VWnJ0egj7uWib9meoAm_yRT35s7QjjlMHfRe_51vjo/edit?usp=sharing
 
-Frontend project link: https://github.com/tmtuan04/department-manager-frontend
+Frontend source: https://github.com/tmtuan04/department-manager-frontend
 
-Detailed project report link: https://nlink.at/PG4P
+Detailed project report: https://nlink.at/PG4P
 
 ## Installation
 ### System Requirements
@@ -59,7 +59,7 @@ Step 1: Build the project code
 
 Run the following command:
 ```bash
-docker-compose up --build
+docker-compose up -d --build
 ```
 
 Step 2: Run the project
